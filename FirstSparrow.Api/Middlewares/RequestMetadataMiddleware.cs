@@ -2,13 +2,11 @@ using FirstSparrow.Application.Shared;
 
 namespace FirstSparrow.Api.Middlewares;
 
-public class RequestMetadataMiddleware(
-    RequestDelegate next,
-    IServiceProvider serviceProvider)
+public class RequestMetadataMiddleware(RequestDelegate next)
 {
     public async Task InvokeAsync(HttpContext context)
     {
-        RequestMetadata requestMetadata = serviceProvider.GetRequiredService<RequestMetadata>();
+        RequestMetadata requestMetadata = context.RequestServices.GetRequiredService<RequestMetadata>();
 
         SetTraceId(context, requestMetadata);
 
