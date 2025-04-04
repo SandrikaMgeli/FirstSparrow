@@ -7,13 +7,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Domain\" />
       <Folder Include="Features\Customer\" />
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="MediatR" Version="12.5.0" />
       <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.3" />
+      <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.3" />
+      <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="9.0.3" />
       <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.7.0" />
     </ItemGroup>
 
