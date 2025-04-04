@@ -4,15 +4,12 @@ public class RequestMetadata
 {
     public readonly Guid TraceId =  Guid.CreateVersion7();
 
-    public bool IsCustomer { get; set; }
+    public bool IsRestaurantRequest => CallerRole != BusinessRole.RestaurantVisitor;
 
     /// <summary>
-    /// From the business perspective 'Customer' is restaurant.
+    /// If RestaurantMetadata is null, then request is coming from restaurant's visitor visitor
     /// </summary>
-    public Guid? CustomerId { get; set; }
+    public RestaurantMetadata? RestaurantMetadata { get; set; }
 
-    /// <summary>
-    /// From the business perspective 'User' is restaurant, which is not onboarded yet.
-    /// </summary>
-    public Guid? UserId { get; set; }
+    public BusinessRole CallerRole { get; set; }
 }
