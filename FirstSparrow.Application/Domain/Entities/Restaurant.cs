@@ -1,9 +1,9 @@
+using FirstSparrow.Application.Domain.Entities.Base;
+
 namespace FirstSparrow.Application.Domain.Entities;
 
-public class Restaurant
+public class Restaurant : BaseEntity<int>
 {
-    public int Id { get; set; }
-
     public string Name { get; set; }
 
     public string OwnerPhoneNumber { get; set; }

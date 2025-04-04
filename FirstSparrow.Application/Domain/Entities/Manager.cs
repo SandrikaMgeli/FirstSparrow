@@ -1,9 +1,9 @@
+using FirstSparrow.Application.Domain.Entities.Base;
+
 namespace FirstSparrow.Application.Domain.Entities;
 
-public class Manager
+public class Manager : BaseEntity<int>
 {
-    public int Id { get; set; }
-
     public string Name { get; set; }
 
     public string LastName { get; set; }

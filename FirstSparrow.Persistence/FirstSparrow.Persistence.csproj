@@ -10,4 +10,8 @@
       <ProjectReference Include="..\FirstSparrow.Application\FirstSparrow.Application.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Creation\" />
+    </ItemGroup>
+
 </Project>
