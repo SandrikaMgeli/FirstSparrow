@@ -1,5 +1,6 @@
 using FirstSparrow.Application.Domain.Entities;
 using FirstSparrow.Application.Repositories.Abstractions;
+using FirstSparrow.Persistence.Constants;
 using FirstSparrow.Persistence.Repositories.Base;
 
 namespace FirstSparrow.Persistence.Repositories;
@@ -13,19 +14,19 @@ public class RestaurantRepository : IRestaurantRepository
         _context = context;
     }
 
-    public Task Insert(Restaurant restaurant, CancellationToken cancellationToken = default)
+    public async Task Insert(Restaurant restaurant, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        await _context.ExecuteAsync(RestaurantRepositoryQueries.InsertQuery, restaurant);
     }
 
-    public Task Update(Restaurant restaurant, CancellationToken cancellationToken = default)
+    public async Task Update(Restaurant restaurant, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        await _context.ExecuteAsync(RestaurantRepositoryQueries.UpdateQuery, restaurant);
     }
 
-    public Task<Restaurant> Get(int id, CancellationToken cancellationToken = default)
+    public async Task<Restaurant?> Get(int id, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await _context.QuerySingleOrDefaultAsync<Restaurant>(RestaurantRepositoryQueries.GetByIdQuery, new { Id = id });
     }
 
     public Task Delete(int id, CancellationToken cancellationToken = default)

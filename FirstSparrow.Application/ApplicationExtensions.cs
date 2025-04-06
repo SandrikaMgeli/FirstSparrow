@@ -4,6 +4,7 @@ using FirstSparrow.Application.Services.Abstractions;
 using FirstSparrow.Application.Shared;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using TimeProvider = System.TimeProvider;
 
 namespace FirstSparrow.Application;
 
@@ -24,7 +25,8 @@ public static class ApplicationExtensions
     private static IServiceCollection AddServices(this IServiceCollection services)
     {
         services.AddScoped<RequestMetadata>();
-        services.AddScoped<ITokenService, TokenService>();
+        services.AddSingleton<ITokenService, TokenService>();
+        services.AddSingleton<ITimeProvider, Services.TimeProvider>();
 
         return services;
     }
