@@ -24,7 +24,7 @@ public class RestaurantRepositoryQueries
                                             @{nameof(Restaurant.OwnerPersonalNumber)},
                                             @{nameof(Restaurant.IsOnboarded)},
                                             @{nameof(Restaurant.CreateTimestamp)},
-                                            @{nameof(Restaurant.UpdateTimestamp)},
+                                            @{nameof(Restaurant.UpdateTimestamp)}
                                         )
                                     RETURNING id;";
 
