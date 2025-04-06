@@ -4,11 +4,8 @@ public class RestaurantMetadata
 {
     public readonly int RestaurantId;
 
-    public readonly bool IsOnBoarded;
-
-    public RestaurantMetadata(int restaurantId, bool isOnBoarded)
+    public RestaurantMetadata(int restaurantId)
     {
         RestaurantId = restaurantId;
-        IsOnBoarded = isOnBoarded;
     }
 }

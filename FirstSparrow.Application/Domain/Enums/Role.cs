@@ -1,6 +1,6 @@
-namespace FirstSparrow.Application.Shared;
+namespace FirstSparrow.Application.Domain.Enums;
 
-public enum BusinessRole
+public enum Role
 {
     RestaurantOwner = 1,
     RestaurantManager = 2,
