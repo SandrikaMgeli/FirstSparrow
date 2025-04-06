@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\FirstSparrow.Application\FirstSparrow.Application.csproj" />
+      <ProjectReference Include="..\FirstSparrow.Infrastructure\FirstSparrow.Infrastructure.csproj" />
       <ProjectReference Include="..\FirstSparrow.Persistence\FirstSparrow.Persistence.csproj" />
     </ItemGroup>
 

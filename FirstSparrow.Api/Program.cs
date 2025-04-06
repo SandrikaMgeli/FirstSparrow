@@ -1,5 +1,6 @@
 using FirstSparrow.Api.Middlewares;
 using FirstSparrow.Application;
+using FirstSparrow.Infrastructure;
 using FirstSparrow.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,7 +10,8 @@ builder.Services.AddOpenApi("docs");
 
 builder.Services 
     .AddApplication(builder.Configuration)
-    .AddPersistence(builder.Configuration);
+    .AddPersistence(builder.Configuration)
+    .AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
