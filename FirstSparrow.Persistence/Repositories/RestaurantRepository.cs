@@ -10,7 +10,8 @@ public class RestaurantRepository(DbManagementContext context) : IRestaurantRepo
 
     public async Task Insert(Restaurant restaurant, CancellationToken cancellationToken = default)
     {
-        await context.ExecuteAsync(RestaurantRepositoryQueries.InsertQuery, restaurant);
+        int restaurantId = await context.QuerySingleAsync<int>(RestaurantRepositoryQueries.InsertQuery, restaurant);
+        restaurant.Id = restaurantId;
     }
 
     public async Task Update(Restaurant restaurant, CancellationToken cancellationToken = default)
