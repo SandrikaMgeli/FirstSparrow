@@ -5,28 +5,22 @@ using FirstSparrow.Persistence.Repositories.Base;
 
 namespace FirstSparrow.Persistence.Repositories;
 
-public class RestaurantRepository : IRestaurantRepository
+public class RestaurantRepository(DbManagementContext context) : IRestaurantRepository
 {
-    private readonly DbManagementContext _context;
-
-    public RestaurantRepository(DbManagementContext context)
-    {
-        _context = context;
-    }
 
     public async Task Insert(Restaurant restaurant, CancellationToken cancellationToken = default)
     {
-        await _context.ExecuteAsync(RestaurantRepositoryQueries.InsertQuery, restaurant);
+        await context.ExecuteAsync(RestaurantRepositoryQueries.InsertQuery, restaurant);
     }
 
     public async Task Update(Restaurant restaurant, CancellationToken cancellationToken = default)
     {
-        await _context.ExecuteAsync(RestaurantRepositoryQueries.UpdateQuery, restaurant);
+        await context.ExecuteAsync(RestaurantRepositoryQueries.UpdateQuery, restaurant);
     }
 
     public async Task<Restaurant?> Get(int id, CancellationToken cancellationToken = default)
     {
-        return await _context.QuerySingleOrDefaultAsync<Restaurant>(RestaurantRepositoryQueries.GetByIdQuery, new { Id = id });
+        return await context.QuerySingleOrDefaultAsync<Restaurant>(RestaurantRepositoryQueries.GetByIdQuery, new { Id = id });
     }
 
     public Task Delete(int id, CancellationToken cancellationToken = default)
