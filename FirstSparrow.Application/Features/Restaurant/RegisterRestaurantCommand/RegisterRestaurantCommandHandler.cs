@@ -23,10 +23,9 @@ public class RegisterRestaurantCommandHandler(
             UpdateTimestamp = timeProvider.GetUtcNow()
         };
 
-        await dbManager.RunAsync(async ct =>
-        {
-            await restaurantRepository.Insert(restaurant, ct);
-        }, cancellationToken);
+        await using IDbManagementContext context = await dbManager.RunAsync(cancellationToken);
+
+        await restaurantRepository.Insert(restaurant, cancellationToken);
 
         return new RegisterRestaurantResponse() { Id = restaurant.Id };
     }

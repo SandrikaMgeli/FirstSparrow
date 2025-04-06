@@ -8,47 +8,18 @@ public class DbManager(
     DbManagementContext context, 
     IOptions<ConnectionStringProvider> connectionStringProvider) : IDbManager
 {
-    public async Task<T> RunAsync<T>(Func<CancellationToken, Task<T>> operation, CancellationToken cancellationToken = default)
+    public async Task<IDbManagementContext> RunAsync(CancellationToken cancellationToken = default)
     {
-        await using (context.Connection = new NpgsqlConnection(connectionStringProvider.Value.ConnectionString))
-        {
-            await context.Connection.OpenAsync(cancellationToken);
-            T result = await operation(cancellationToken);
-            return result;
-        }
+        context.Connection = new NpgsqlConnection(connectionStringProvider.Value.ConnectionString);
+        await context.Connection.OpenAsync(cancellationToken);
+        return context;
     }
 
-    public async Task<T> RunWithTransactionAsync<T>(Func<CancellationToken, Task<T>> operation, CancellationToken cancellationToken = default)
+    public async Task<IDbManagementContext> RunWithTransactionAsync(CancellationToken cancellationToken = default)
     {
-        await using (context.Connection = new NpgsqlConnection(connectionStringProvider.Value.ConnectionString))
-        {
-            await context.Connection.OpenAsync(cancellationToken);
-            await using (context.Transaction = await context.Connection.BeginTransactionAsync(cancellationToken))
-            {
-                T result = await operation(cancellationToken);
-                return result;
-            }
-        }
-    }
-
-    public async Task RunAsync(Func<CancellationToken, Task> operation, CancellationToken cancellationToken = default)
-    {
-        await using (context.Connection = new NpgsqlConnection(connectionStringProvider.Value.ConnectionString))
-        {
-            await context.Connection.OpenAsync(cancellationToken);
-            await operation(cancellationToken);
-        }
-    }
-
-    public async Task RunWithTransactionAsync(Func<CancellationToken, Task> operation, CancellationToken cancellationToken = default)
-    {
-        await using (context.Connection = new NpgsqlConnection(connectionStringProvider.Value.ConnectionString))
-        {
-            await context.Connection.OpenAsync(cancellationToken);
-            await using (context.Transaction = await context.Connection.BeginTransactionAsync(cancellationToken))
-            {
-                await operation(cancellationToken);
-            }
-        }
+        context.Connection = new NpgsqlConnection(connectionStringProvider.Value.ConnectionString);
+        await context.Connection.OpenAsync(cancellationToken);
+        context.Transaction = await context.Connection.BeginTransactionAsync(cancellationToken);
+        return context;
     }
 }
