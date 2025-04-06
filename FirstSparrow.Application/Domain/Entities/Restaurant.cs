@@ -12,5 +12,7 @@ public class Restaurant : BaseEntity<int>
 
     public string OwnerLastName { get; set; }
 
-    public bool IsOnBoarded { get; set; }
+    public string OwnerPersonalNumber { get; set; }
+
+    public bool IsOnboarded { get; set; }
 }
