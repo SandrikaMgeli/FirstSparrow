@@ -20,6 +20,7 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.3" />
+      <PackageReference Include="NSec.Cryptography" Version="24.4.0" />
       <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="8.1.0" />
     </ItemGroup>
 
