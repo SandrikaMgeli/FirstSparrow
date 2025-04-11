@@ -7,14 +7,17 @@ public class RequestMetadataMiddleware(RequestDelegate next)
     public async Task InvokeAsync(HttpContext context)
     {
         RequestMetadata requestMetadata = context.RequestServices.GetRequiredService<RequestMetadata>();
-
-        SetTraceId(context, requestMetadata);
+        SetupTraceIdResponseHeader(context, requestMetadata);
 
         await next(context);
     }
 
-    private static void SetTraceId(HttpContext context, RequestMetadata requestMetadata)
+    private void SetupTraceIdResponseHeader(HttpContext context, RequestMetadata requestMetadata)
     {
-        context.Response.Headers.Append("TraceId", requestMetadata.TraceId.ToString());
+        context.Response.OnStarting(() =>
+        {
+            context.Response.Headers["trace_id"] = requestMetadata.TraceId.ToString();
+            return Task.CompletedTask;
+        });
     }
 }

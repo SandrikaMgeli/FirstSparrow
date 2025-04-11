@@ -1,3 +1,4 @@
+using FirstSparrow.Api;
 using FirstSparrow.Api.Middlewares;
 using FirstSparrow.Application;
 using FirstSparrow.Infrastructure;
@@ -7,14 +8,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi("docs");
-
-builder.Services 
+    
+builder.Services
+    .AddApi(builder.Configuration)
     .AddApplication(builder.Configuration)
     .AddPersistence(builder.Configuration)
     .AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
+app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 app.UseMiddleware<RequestMetadataMiddleware>();
 
 app.MapOpenApi();
