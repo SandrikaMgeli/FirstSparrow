@@ -5,5 +5,5 @@ public enum RestaurantFlag
 {
     None = 0,
     OnBoarded = 1,
-    OwnerNumberVerified = 2,
+    OwnerPhoneVerified = 2,
 }
