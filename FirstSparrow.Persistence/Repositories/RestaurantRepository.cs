@@ -1,4 +1,5 @@
 using FirstSparrow.Application.Domain.Entities;
+using FirstSparrow.Application.Domain.Extensions;
 using FirstSparrow.Application.Repositories.Abstractions;
 using FirstSparrow.Persistence.Constants;
 using FirstSparrow.Persistence.Repositories.Base;
@@ -19,9 +20,15 @@ public class RestaurantRepository(DbManagementContext context) : IRestaurantRepo
         await context.ExecuteAsync(RestaurantRepositoryQueries.UpdateQuery, restaurant);
     }
 
-    public async Task<Restaurant?> Get(int id, CancellationToken cancellationToken = default)
+    public async Task<Restaurant?> Get(int id, bool ensureExists, CancellationToken cancellationToken = default)
     {
-        return await context.QuerySingleOrDefaultAsync<Restaurant>(RestaurantRepositoryQueries.GetByIdQuery, new { Id = id });
+        Restaurant? restaurant = await context.QuerySingleOrDefaultAsync<Restaurant>(RestaurantRepositoryQueries.GetByIdQuery, new { Id = id });
+        if (ensureExists)
+        {
+            restaurant.EnsureExists(id);
+        }
+
+        return restaurant;
     }
 
     public Task Delete(int id, CancellationToken cancellationToken = default)

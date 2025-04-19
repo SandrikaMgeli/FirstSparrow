@@ -1,3 +1,4 @@
+using FirstSparrow.Application.Domain.Entities;
 using FirstSparrow.Application.Domain.Enums;
 using FirstSparrow.Application.Repositories.Abstractions;
 using FirstSparrow.Application.Repositories.Abstractions.Base;
@@ -9,7 +10,9 @@ namespace FirstSparrow.Application.Features.Restaurant.RegisterRestaurantCommand
 public class RegisterRestaurantCommandHandler(
     IDbManager dbManager,
     IRestaurantRepository restaurantRepository,
-    ITimeProvider timeProvider) : IRequestHandler<RegisterRestaurantCommand, RegisterRestaurantResponse>
+    ITimeProvider timeProvider,
+    IOtpService otpService,
+    IOtpRepository otpRepository) : IRequestHandler<RegisterRestaurantCommand, RegisterRestaurantResponse>
 {
     public async Task<RegisterRestaurantResponse> Handle(RegisterRestaurantCommand request, CancellationToken cancellationToken)
     {
@@ -28,7 +31,24 @@ public class RegisterRestaurantCommandHandler(
         await using IDbManagementContext context = await dbManager.RunAsync(cancellationToken);
 
         await restaurantRepository.Insert(restaurant, cancellationToken);
+        await SendOtp(restaurant.OwnerPhoneNumber);
 
         return new RegisterRestaurantResponse() { Id = restaurant.Id };
+    }
+
+    private async Task SendOtp(string phoneNumber)
+    {
+        int otp = otpService.Generate(4);
+        DateTime currentTime = timeProvider.GetUtcNow();
+
+        await otpRepository.Insert(new Otp()
+        {
+            Code = otp,
+            Destination = phoneNumber,
+            IsUsed = false,
+            ExpiresAt = currentTime.AddMinutes(1),
+            CreateTimestamp = currentTime,
+            UpdateTimestamp = currentTime,
+        });
     }
 }

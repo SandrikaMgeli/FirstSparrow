@@ -25,8 +25,10 @@ public static class ApplicationExtensions
     private static IServiceCollection AddServices(this IServiceCollection services)
     {
         services.AddScoped<RequestMetadata>();
+
         services.AddSingleton<ITokenService, TokenService>();
         services.AddSingleton<ITimeProvider, Services.TimeProvider>();
+        services.AddSingleton<IOtpService, OtpService>();
 
         return services;
     }

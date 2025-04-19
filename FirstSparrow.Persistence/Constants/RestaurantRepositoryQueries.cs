@@ -35,22 +35,22 @@ public static class RestaurantRepositoryQueries
                                                 owner_name = @{nameof(Restaurant.OwnerName)},
                                                 owner_last_name = @{nameof(Restaurant.OwnerLastName)},
                                                 owner_personal_number = @{nameof(Restaurant.OwnerPersonalNumber)},
-                                                is_onboarded = @{nameof(Restaurant.RestaurantFlags)},
+                                                restaurant_flags = @{nameof(Restaurant.RestaurantFlags)},
                                                 create_timestamp = @{nameof(Restaurant.CreateTimestamp)},
                                                 update_timestamp = @{nameof(Restaurant.UpdateTimestamp)}
                                             WHERE id = @{nameof(Restaurant.Id)};";
 
-    public const string DeleteQuery = @$"SELECT
+    public const string DeleteQuery = @$"";
+
+    public const string GetByIdQuery = $@"SELECT
                                             id as {nameof(Restaurant.Id)}
                                             name as {nameof(Restaurant.Name)}
                                             owner_phone_number as {nameof(Restaurant.OwnerPhoneNumber)}
                                             owner_name as {nameof(Restaurant.OwnerName)}
                                             owner_last_name as {nameof(Restaurant.OwnerLastName)}
                                             owner_personal_number as {nameof(Restaurant.OwnerPersonalNumber)}
-                                            is_onboarded as {nameof(Restaurant.RestaurantFlags)}
+                                            restaurant_flags as {nameof(Restaurant.RestaurantFlags)}
                                             create_timestamp as {nameof(Restaurant.CreateTimestamp)}
                                             update_timestamp as {nameof(Restaurant.UpdateTimestamp)}
-                                        FROM restaurants WHERE id = @{nameof(Restaurant.Id)};";
-
-    public const string GetByIdQuery = "";
+                                        FROM restaurants WHERE id = @id;";
 }
