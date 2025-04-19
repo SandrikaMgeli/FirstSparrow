@@ -11,7 +11,7 @@ public class RestaurantRepositoryQueries
                                             owner_name,
                                             owner_last_name,
                                             owner_personal_number,
-                                            is_onboarded,
+                                            restaurant_flags,
                                             create_timestamp,
                                             update_timestamp
                                         )
@@ -22,7 +22,7 @@ public class RestaurantRepositoryQueries
                                             @{nameof(Restaurant.OwnerName)},
                                             @{nameof(Restaurant.OwnerLastName)},
                                             @{nameof(Restaurant.OwnerPersonalNumber)},
-                                            @{nameof(Restaurant.IsOnboarded)},
+                                            @{nameof(Restaurant.RestaurantFlags)},
                                             @{nameof(Restaurant.CreateTimestamp)},
                                             @{nameof(Restaurant.UpdateTimestamp)}
                                         )
@@ -35,7 +35,7 @@ public class RestaurantRepositoryQueries
                                                 owner_name = @{nameof(Restaurant.OwnerName)},
                                                 owner_last_name = @{nameof(Restaurant.OwnerLastName)},
                                                 owner_personal_number = @{nameof(Restaurant.OwnerPersonalNumber)},
-                                                is_onboarded = @{nameof(Restaurant.IsOnboarded)},
+                                                is_onboarded = @{nameof(Restaurant.RestaurantFlags)},
                                                 create_timestamp = @{nameof(Restaurant.CreateTimestamp)},
                                                 update_timestamp = @{nameof(Restaurant.UpdateTimestamp)}
                                             WHERE id = @{nameof(Restaurant.Id)};";
@@ -47,7 +47,7 @@ public class RestaurantRepositoryQueries
                                             owner_name as {nameof(Restaurant.OwnerName)}
                                             owner_last_name as {nameof(Restaurant.OwnerLastName)}
                                             owner_personal_number as {nameof(Restaurant.OwnerPersonalNumber)}
-                                            is_onboarded as {nameof(Restaurant.IsOnboarded)}
+                                            is_onboarded as {nameof(Restaurant.RestaurantFlags)}
                                             create_timestamp as {nameof(Restaurant.CreateTimestamp)}
                                             update_timestamp as {nameof(Restaurant.UpdateTimestamp)}
                                         FROM restaurants WHERE id = @{nameof(Restaurant.Id)};";

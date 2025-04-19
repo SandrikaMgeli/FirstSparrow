@@ -1,3 +1,4 @@
+using FirstSparrow.Application.Domain.Enums;
 using FirstSparrow.Application.Repositories.Abstractions;
 using FirstSparrow.Application.Repositories.Abstractions.Base;
 using FirstSparrow.Application.Services.Abstractions;
@@ -20,7 +21,8 @@ public class RegisterRestaurantCommandHandler(
             OwnerLastName = request.OwnerLastName,
             OwnerPersonalNumber = request.OwnerPersonalNumber,
             CreateTimestamp = timeProvider.GetUtcNow(),
-            UpdateTimestamp = timeProvider.GetUtcNow()
+            UpdateTimestamp = timeProvider.GetUtcNow(),
+            RestaurantFlags = RestaurantFlag.None
         };
 
         await using IDbManagementContext context = await dbManager.RunAsync(cancellationToken);

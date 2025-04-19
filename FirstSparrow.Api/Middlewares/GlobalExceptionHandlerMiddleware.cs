@@ -5,7 +5,7 @@ using FirstSparrow.Application.Shared;
 
 namespace FirstSparrow.Api.Middlewares;
 
-public class GlobalExceptionHandlerMiddleware(RequestDelegate next)
+public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<GlobalExceptionHandlerMiddleware> logger)
 {
     private const string UnknownError = "UNKNOWN_ERROR";
     public async Task InvokeAsync(HttpContext context)
@@ -30,6 +30,7 @@ public class GlobalExceptionHandlerMiddleware(RequestDelegate next)
 
     private async Task HandleAppException(HttpContext context, AppException appException)
     {
+        logger.LogError(appException, nameof(HandleAppException));
         RequestMetadata requestMetadata = context.RequestServices.GetRequiredService<RequestMetadata>();
         context.Response.StatusCode = StatusCodes.Status400BadRequest;
         context.Response.ContentType = "application/json";
@@ -46,6 +47,7 @@ public class GlobalExceptionHandlerMiddleware(RequestDelegate next)
 
     private async Task HandleUnauthorized(HttpContext context, Exception ex)
     {
+        logger.LogError(ex, nameof(HandleUnauthorized));
         RequestMetadata requestMetadata = context.RequestServices.GetRequiredService<RequestMetadata>();
         context.Response.StatusCode = StatusCodes.Status401Unauthorized;
         context.Response.ContentType = "application/json";
@@ -62,6 +64,7 @@ public class GlobalExceptionHandlerMiddleware(RequestDelegate next)
 
     private async Task HandleUnknownException(HttpContext context, Exception ex)
     {
+        logger.LogError(ex, nameof(HandleUnknownException));
         RequestMetadata requestMetadata = context.RequestServices.GetRequiredService<RequestMetadata>();
         context.Response.StatusCode = StatusCodes.Status500InternalServerError;
         context.Response.ContentType = "application/json";

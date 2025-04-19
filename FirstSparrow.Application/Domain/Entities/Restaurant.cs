@@ -1,4 +1,5 @@
 using FirstSparrow.Application.Domain.Entities.Base;
+using FirstSparrow.Application.Domain.Enums;
 
 namespace FirstSparrow.Application.Domain.Entities;
 
@@ -14,5 +15,5 @@ public class Restaurant : BaseEntity<int>
 
     public string OwnerPersonalNumber { get; set; }
 
-    public bool IsOnboarded { get; set; }
+    public RestaurantFlag RestaurantFlags { get; set; }
 }

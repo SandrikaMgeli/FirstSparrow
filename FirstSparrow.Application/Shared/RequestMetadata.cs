@@ -1,5 +1,3 @@
-using FirstSparrow.Application.Domain.Enums;
-
 namespace FirstSparrow.Application.Shared;
 
 public class RequestMetadata

@@ -1,0 +1,1 @@
+CREATE DATABASE first_sparrow_db;
