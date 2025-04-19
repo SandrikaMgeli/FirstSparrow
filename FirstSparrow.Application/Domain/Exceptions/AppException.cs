@@ -9,7 +9,7 @@ public class AppException : Exception
         ExceptionCode = code;
     }
 
-    public AppException(Exception ex, ExceptionCode code = ExceptionCode.GENERAL_ERROR) : base(ex.Message)
+    public AppException(Exception ex, ExceptionCode code = ExceptionCode.GENERAL_ERROR) : base(ex.Message, ex)
     {
         ExceptionCode = code;
     }
