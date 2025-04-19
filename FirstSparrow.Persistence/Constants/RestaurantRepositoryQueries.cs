@@ -2,7 +2,7 @@ using FirstSparrow.Application.Domain.Entities;
 
 namespace FirstSparrow.Persistence.Constants;
 
-public class RestaurantRepositoryQueries
+public static class RestaurantRepositoryQueries
 {
     public const string InsertQuery = $@"INSERT INTO restaurants
                                         (
