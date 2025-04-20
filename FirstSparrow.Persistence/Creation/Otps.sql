@@ -13,3 +13,5 @@ CREATE TABLE otps
 
 CREATE INDEX otp_idx_sent_destination_usage_used ON otps (destination,usage)
     WHERE is_sent = TRUE AND is_used = FALSE;
+
+CREATE INDEX otp_idx_sent ON otps (is_sent);
