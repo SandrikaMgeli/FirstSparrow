@@ -28,7 +28,17 @@ public static class OtpRepositoryQueries
                                         ) 
                                         RETURNING id;";
 
-    public const string UpdateQuery = @$"";
+    public const string UpdateQuery = @$"UPDATE otps
+                                            SET
+                                                code = @{nameof(Otp.Code)},
+                                                destination = @{nameof(Otp.Destination)},
+                                                is_used = @{nameof(Otp.IsSent)},
+                                                usage = @{nameof(Otp.Usage)},
+                                                is_sent = @{nameof(Otp.IsSent)},
+                                                expires_at = @{nameof(Otp.ExpiresAt)},
+                                                create_timestamp = @{nameof(Otp.CreateTimestamp)},
+                                                update_timestamp = @{nameof(Otp.UpdateTimestamp)} 
+                                        WHERE id = @{nameof(Otp.Id)};";
 
     public const string DeleteQuery = @$"";
 
