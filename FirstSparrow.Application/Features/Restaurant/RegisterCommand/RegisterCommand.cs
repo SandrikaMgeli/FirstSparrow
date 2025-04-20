@@ -1,8 +1,8 @@
 using MediatR;
 
-namespace FirstSparrow.Application.Features.Restaurant.RegisterRestaurantCommand;
+namespace FirstSparrow.Application.Features.Restaurant.RegisterCommand;
 
-public class RegisterRestaurantCommand : IRequest<RegisterRestaurantResponse>
+public class RegisterCommand : IRequest<RegisterResponse>
 {
     public string Name { get; set; }
 

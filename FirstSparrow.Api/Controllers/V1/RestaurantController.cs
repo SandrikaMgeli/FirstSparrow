@@ -1,5 +1,5 @@
 using FirstSparrow.Application.Features.Restaurant.LoginCommand;
-using FirstSparrow.Application.Features.Restaurant.RegisterRestaurantCommand;
+using FirstSparrow.Application.Features.Restaurant.RegisterCommand;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +20,7 @@ public class RestaurantController(IMediator mediator) : ControllerBase
 
     [HttpPost("register")]
     [AllowAnonymous]
-    public async Task<IActionResult> Register([FromBody] RegisterRestaurantCommand request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Register([FromBody] RegisterCommand request, CancellationToken cancellationToken)
     {
         return Ok(await mediator.Send(request, cancellationToken));
     }

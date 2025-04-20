@@ -5,16 +5,16 @@ using FirstSparrow.Application.Repositories.Abstractions.Base;
 using FirstSparrow.Application.Services.Abstractions;
 using MediatR;
 
-namespace FirstSparrow.Application.Features.Restaurant.RegisterRestaurantCommand;
+namespace FirstSparrow.Application.Features.Restaurant.RegisterCommand;
 
-public class RegisterRestaurantCommandHandler(
+public class RegisterCommandHandler(
     IDbManager dbManager,
     IRestaurantRepository restaurantRepository,
     ITimeProvider timeProvider,
     IOtpService otpService,
-    IOtpRepository otpRepository) : IRequestHandler<RegisterRestaurantCommand, RegisterRestaurantResponse>
+    IOtpRepository otpRepository) : IRequestHandler<RegisterCommand, RegisterResponse>
 {
-    public async Task<RegisterRestaurantResponse> Handle(RegisterRestaurantCommand request, CancellationToken cancellationToken)
+    public async Task<RegisterResponse> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
         Domain.Entities.Restaurant restaurant = new()
         {
@@ -33,7 +33,7 @@ public class RegisterRestaurantCommandHandler(
         await restaurantRepository.Insert(restaurant, cancellationToken);
         await SendOtp(restaurant.OwnerPhoneNumber);
 
-        return new RegisterRestaurantResponse() { Id = restaurant.Id };
+        return new RegisterResponse() { Id = restaurant.Id };
     }
 
     private async Task SendOtp(string phoneNumber)
