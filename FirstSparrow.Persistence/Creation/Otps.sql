@@ -10,3 +10,6 @@ CREATE TABLE otps
     create_timestamp TIMESTAMPTZ,
     update_timestamp TIMESTAMPTZ
 );
+
+CREATE INDEX otp_idx_sent_destination_usage_used ON otps (destination,usage)
+    WHERE is_sent = TRUE AND is_used = FALSE;
