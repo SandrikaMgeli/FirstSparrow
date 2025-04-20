@@ -46,6 +46,8 @@ public class RegisterRestaurantCommandHandler(
             Code = otp,
             Destination = phoneNumber,
             IsUsed = false,
+            Usage = OtpUsage.OwnerPhoneVerification,
+            IsSent = false,
             ExpiresAt = currentTime.AddMinutes(1),
             CreateTimestamp = currentTime,
             UpdateTimestamp = currentTime,

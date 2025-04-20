@@ -4,6 +4,8 @@ CREATE TABLE otps
     code int,
     destination varchar(200),
     is_used bool,
+    usage int,
+    is_sent bool DEFAULT FALSE,
     expires_at TIMESTAMPTZ,
     create_timestamp TIMESTAMPTZ,
     update_timestamp TIMESTAMPTZ

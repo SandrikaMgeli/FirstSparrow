@@ -52,5 +52,5 @@ public static class RestaurantRepositoryQueries
                                             restaurant_flags as {nameof(Restaurant.RestaurantFlags)}
                                             create_timestamp as {nameof(Restaurant.CreateTimestamp)}
                                             update_timestamp as {nameof(Restaurant.UpdateTimestamp)}
-                                        FROM restaurants WHERE id = @id;";
+                                        FROM restaurants WHERE id = @id LIMIT 1;";
 }

@@ -8,6 +8,8 @@ public static class OtpRepositoryQueries
                                         (
                                             code,
                                             is_used,
+                                            usage,
+                                            is_sent,
                                             destination,
                                             expires_at,
                                             create_timestamp,
@@ -17,6 +19,8 @@ public static class OtpRepositoryQueries
                                         (
                                             @{nameof(Otp.Code)},
                                             @{nameof(Otp.IsUsed)},
+                                            @{nameof(Otp.Usage)},
+                                            @{nameof(Otp.IsSent)},
                                             @{nameof(Otp.Destination)},
                                             @{nameof(Otp.ExpiresAt)},
                                             @{nameof(Otp.CreateTimestamp)},
@@ -32,9 +36,11 @@ public static class OtpRepositoryQueries
                                             id as {nameof(Otp.Id)},
                                             code as {nameof(Otp.Code)},
                                             is_used as {nameof(Otp.IsUsed)},
+                                            usage as {nameof(Otp.Usage)},
+                                            is_sent as  {nameof(Otp.IsSent)},
                                             destination as {nameof(Otp.Destination)},
                                             expires_at as {nameof(Otp.ExpiresAt)},
                                             create_timestamp as {nameof(Otp.CreateTimestamp)},
                                             update_timestamp as {nameof(Otp.UpdateTimestamp)},
-                                        FROM otps WHERE id = @id";
+                                        FROM otps WHERE id = @id LIMIT 1";
 }
