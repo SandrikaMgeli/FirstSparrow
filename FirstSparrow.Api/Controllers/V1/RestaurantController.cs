@@ -1,3 +1,4 @@
+using FirstSparrow.Application.Features.Restaurant.ConfirmOwnerPhoneCommand;
 using FirstSparrow.Application.Features.Restaurant.LoginCommand;
 using FirstSparrow.Application.Features.Restaurant.RegisterCommand;
 using MediatR;
@@ -10,25 +11,17 @@ namespace FirstSparrow.Api.Controllers.V1;
 [Route("api/v1/restaurant")]
 public class RestaurantController(IMediator mediator) : ControllerBase
 {
-    [HttpPost("login")]
-    [AllowAnonymous]
-    public async Task<IActionResult> Login([FromBody] LoginCommand request, CancellationToken cancellationToken)
-    {
-        LoginResponse response = await mediator.Send(request, cancellationToken);
-        return Ok(response);
-    }
-
-    [HttpPost("register")]
+    [HttpPost]
     [AllowAnonymous]
     public async Task<IActionResult> Register([FromBody] RegisterCommand request, CancellationToken cancellationToken)
     {
         return Ok(await mediator.Send(request, cancellationToken));
     }
 
-    [HttpPost("refresh")]
+    [HttpPost("confirm-owner-phone-number")]
     [AllowAnonymous]
-    public async Task<IActionResult> Refresh()
+    public async Task<IActionResult> ConfirmOwnerPhoneNumber([FromBody] ConfirmOwnerPhoneCommand request, CancellationToken cancellationToken)
     {
-        return Ok();
+        return Ok(await mediator.Send(request, cancellationToken));
     }
 }
