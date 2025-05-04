@@ -7,7 +7,6 @@ namespace FirstSparrow.Api.Middlewares;
 
 public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<GlobalExceptionHandlerMiddleware> logger)
 {
-    private const string UnknownError = "UNKNOWN_ERROR";
     public async Task InvokeAsync(HttpContext context)
     {
         try
@@ -35,28 +34,20 @@ public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<Glob
         context.Response.StatusCode = StatusCodes.Status400BadRequest;
         context.Response.ContentType = "application/json";
 
-        ApiProblemDetails apiProblemDetails = new ApiProblemDetails()
-        {
-            Message = appException.ExceptionCode.ToString(),
-            TraceId = requestMetadata.TraceId,
-        };
+        ApiProblemDetails apiProblemDetails = ApiProblemDetails.Create(appException, requestMetadata);
 
         var json = JsonSerializer.Serialize(apiProblemDetails);
         await context.Response.WriteAsync(json);
     }
 
-    private async Task HandleUnauthorized(HttpContext context, Exception ex)
+    private async Task HandleUnauthorized(HttpContext context, AppException appException)
     {
-        logger.LogError(ex, nameof(HandleUnauthorized));
+        logger.LogError(appException, nameof(HandleUnauthorized));
         RequestMetadata requestMetadata = context.RequestServices.GetRequiredService<RequestMetadata>();
         context.Response.StatusCode = StatusCodes.Status401Unauthorized;
         context.Response.ContentType = "application/json";
 
-        ApiProblemDetails apiProblemDetails = new ApiProblemDetails()
-        {
-            Message = nameof(ExceptionCode.UNAUTHORIZED),
-            TraceId = requestMetadata.TraceId,
-        };
+        ApiProblemDetails apiProblemDetails = ApiProblemDetails.Create(appException, requestMetadata);
 
         var json = JsonSerializer.Serialize(apiProblemDetails);
         await context.Response.WriteAsync(json);
@@ -69,11 +60,7 @@ public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<Glob
         context.Response.StatusCode = StatusCodes.Status500InternalServerError;
         context.Response.ContentType = "application/json";
 
-        ApiProblemDetails apiProblemDetails = new ApiProblemDetails()
-        {
-            Message = UnknownError,
-            TraceId = requestMetadata.TraceId,
-        };
+        ApiProblemDetails apiProblemDetails = ApiProblemDetails.Create(requestMetadata);
 
         var json = JsonSerializer.Serialize(apiProblemDetails);
         await context.Response.WriteAsync(json);
