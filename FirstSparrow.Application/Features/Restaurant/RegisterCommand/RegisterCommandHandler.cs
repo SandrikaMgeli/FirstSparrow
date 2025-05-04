@@ -10,7 +10,7 @@ namespace FirstSparrow.Application.Features.Restaurant.RegisterCommand;
 public class RegisterCommandHandler(
     IDbManager dbManager,
     IRestaurantRepository restaurantRepository,
-    ITimeProvider timeProvider,
+    TimeProvider timeProvider,
     IOtpService otpService,
     IOtpRepository otpRepository) : IRequestHandler<RegisterCommand, RegisterResponse>
 {
@@ -23,8 +23,8 @@ public class RegisterCommandHandler(
             OwnerName = request.OwnerName,
             OwnerLastName = request.OwnerLastName,
             OwnerPersonalNumber = request.OwnerPersonalNumber,
-            CreateTimestamp = timeProvider.GetUtcNow(),
-            UpdateTimestamp = timeProvider.GetUtcNow(),
+            CreateTimestamp = timeProvider.GetUtcNow().DateTime,
+            UpdateTimestamp = timeProvider.GetUtcNow().DateTime,
             RestaurantFlags = RestaurantFlag.None
         };
 
@@ -39,7 +39,7 @@ public class RegisterCommandHandler(
     private async Task SendOtp(string phoneNumber)
     {
         int otp = otpService.Generate(4);
-        DateTime currentTime = timeProvider.GetUtcNow();
+        DateTime currentTime = timeProvider.GetUtcNow().DateTime;
 
         await otpRepository.Insert(new Otp()
         {

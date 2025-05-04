@@ -27,7 +27,6 @@ public static class ApplicationExtensions
         services.AddScoped<RequestMetadata>();
 
         services.AddSingleton<ITokenService, TokenService>();
-        services.AddSingleton<ITimeProvider, Services.TimeProvider>();
         services.AddSingleton<IOtpService, OtpService>();
 
         return services;
