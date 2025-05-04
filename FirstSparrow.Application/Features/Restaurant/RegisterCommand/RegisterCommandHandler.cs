@@ -1,56 +1,11 @@
-using FirstSparrow.Application.Domain.Entities;
-using FirstSparrow.Application.Domain.Enums;
-using FirstSparrow.Application.Repositories.Abstractions;
-using FirstSparrow.Application.Repositories.Abstractions.Base;
-using FirstSparrow.Application.Services.Abstractions;
 using MediatR;
 
 namespace FirstSparrow.Application.Features.Restaurant.RegisterCommand;
 
-public class RegisterCommandHandler(
-    IDbManager dbManager,
-    IRestaurantRepository restaurantRepository,
-    TimeProvider timeProvider,
-    IOtpService otpService,
-    IOtpRepository otpRepository) : IRequestHandler<RegisterCommand, RegisterResponse>
+public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RegisterResponse>
 {
-    public async Task<RegisterResponse> Handle(RegisterCommand request, CancellationToken cancellationToken)
+    public Task<RegisterResponse> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
-        Domain.Entities.Restaurant restaurant = new()
-        {
-            Name = request.Name,
-            OwnerPhoneNumber = request.OwnerPhoneNumber,
-            OwnerName = request.OwnerName,
-            OwnerLastName = request.OwnerLastName,
-            OwnerPersonalNumber = request.OwnerPersonalNumber,
-            CreateTimestamp = timeProvider.GetUtcNow().DateTime,
-            UpdateTimestamp = timeProvider.GetUtcNow().DateTime,
-            RestaurantFlags = RestaurantFlag.None
-        };
-
-        await using IDbManagementContext context = await dbManager.RunAsync(cancellationToken);
-
-        await restaurantRepository.Insert(restaurant, cancellationToken);
-        await SendOtp(restaurant.OwnerPhoneNumber);
-
-        return new RegisterResponse() { Id = restaurant.Id };
-    }
-
-    private async Task SendOtp(string phoneNumber)
-    {
-        int otp = otpService.Generate(4);
-        DateTime currentTime = timeProvider.GetUtcNow().DateTime;
-
-        await otpRepository.Insert(new Otp()
-        {
-            Code = otp,
-            Destination = phoneNumber,
-            IsUsed = false,
-            Usage = OtpUsage.OwnerPhoneVerification,
-            IsSent = false,
-            ExpiresAt = currentTime.AddMinutes(1),
-            CreateTimestamp = currentTime,
-            UpdateTimestamp = currentTime,
-        });
+        return Task.FromResult(new RegisterResponse());
     }
 }
