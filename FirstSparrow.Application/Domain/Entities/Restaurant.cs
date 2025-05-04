@@ -7,13 +7,7 @@ public class Restaurant : BaseEntity<int>
 {
     public string Name { get; set; }
 
-    public string OwnerPhoneNumber { get; set; }
-
-    public string OwnerName { get; set; }
-
-    public string OwnerLastName { get; set; }
-
-    public string OwnerPersonalNumber { get; set; }
+    public string Password { get; set; }
 
     public RestaurantFlag RestaurantFlags { get; set; }
 }

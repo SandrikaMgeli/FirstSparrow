@@ -8,4 +8,6 @@ public abstract class BaseEntity<TId>
     public DateTime CreateTimestamp { get; set; }
 
     public DateTime UpdateTimestamp { get; set; }
+
+    public bool IsDeleted { get; set; }
 }
