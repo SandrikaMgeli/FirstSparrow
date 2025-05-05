@@ -20,15 +20,26 @@ public class RestaurantRepository(DbManagementContext context) : IRestaurantRepo
         await context.ExecuteAsync(RestaurantRepositoryQueries.UpdateQuery, restaurant);
     }
 
-    public async Task<Restaurant?> GetById(int id, bool ensureExists, CancellationToken cancellationToken = default)
+    public async Task<Restaurant> GetById(int id, bool ensureExists, CancellationToken cancellationToken = default)
     {
         Restaurant? restaurant = await context.QuerySingleOrDefaultAsync<Restaurant>(RestaurantRepositoryQueries.GetByIdQuery, new { Id = id });
         if (ensureExists)
         {
-            restaurant.EnsureExists(id);
+            restaurant.EnsureExists($"id = {id}");
         }
 
-        return restaurant;
+        return restaurant!;
+    }
+
+    public async Task<Restaurant> GetByName(string name, bool ensureExists, CancellationToken cancellationToken = default)
+    {
+        Restaurant? restaurant = await context.QuerySingleOrDefaultAsync<Restaurant>(RestaurantRepositoryQueries.GetByName, new { Name = name });
+        if (ensureExists)
+        {
+            restaurant.EnsureExists($"name = {name}");
+        }
+
+        return restaurant!;
     }
 
     public async Task Delete(int id, CancellationToken cancellationToken = default)

@@ -47,4 +47,13 @@ public static class RestaurantRepositoryQueries
                                             create_timestamp as {nameof(Restaurant.CreateTimestamp)},
                                             update_timestamp as {nameof(Restaurant.UpdateTimestamp)}
                                         FROM restaurants WHERE id = @Id;";
+
+    public const string GetByName = $@"SELECT
+                                            id as {nameof(Restaurant.Id)},
+                                            name as {nameof(Restaurant.Name)},
+                                            password as {nameof(Restaurant.Password)},
+                                            restaurant_flags as {nameof(Restaurant.RestaurantFlags)},
+                                            create_timestamp as {nameof(Restaurant.CreateTimestamp)},
+                                            update_timestamp as {nameof(Restaurant.UpdateTimestamp)}
+                                        FROM restaurants WHERE name = @Name;";
 }

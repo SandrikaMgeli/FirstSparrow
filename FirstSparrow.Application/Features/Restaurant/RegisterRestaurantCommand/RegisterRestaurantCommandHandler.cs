@@ -1,13 +1,24 @@
 using FirstSparrow.Application.Domain.Exceptions;
+using FirstSparrow.Application.Repositories.Abstractions;
 using MediatR;
 
 namespace FirstSparrow.Application.Features.Restaurant.RegisterRestaurantCommand;
 
-public class RegisterRestaurantCommandHandler : IRequestHandler<RegisterRestaurantCommand, RegisterRestaurantResponse>
+public class RegisterRestaurantCommandHandler(
+    IRestaurantRepository restaurantRepository) : IRequestHandler<RegisterRestaurantCommand, RegisterRestaurantResponse>
 {
-    public Task<RegisterRestaurantResponse> Handle(RegisterRestaurantCommand request, CancellationToken cancellationToken)
+    public async Task<RegisterRestaurantResponse> Handle(RegisterRestaurantCommand request, CancellationToken cancellationToken)
     {
-        return Task.FromResult(new RegisterRestaurantResponse());
+        try
+        {
+
+        }
+        catch (AppException ex) when (ex.ExceptionCode == ExceptionCode.OBJECT_NOT_FOUND)
+        {
+            
+        }
+        
+        return new RegisterRestaurantResponse();
     }
 
     private void EnsurePasswordIsValid(string password)

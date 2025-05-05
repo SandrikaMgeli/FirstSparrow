@@ -5,5 +5,5 @@ namespace FirstSparrow.Application.Repositories.Abstractions;
 
 public interface IRestaurantRepository : IBaseRepository<Restaurant, int>
 {
-    
+    Task<Restaurant> GetByName(string name, bool ensureExists, CancellationToken cancellationToken = default);
 }
