@@ -20,7 +20,7 @@ public class RestaurantRepository(DbManagementContext context) : IRestaurantRepo
         await context.ExecuteAsync(RestaurantRepositoryQueries.UpdateQuery, restaurant);
     }
 
-    public async Task<Restaurant?> Get(int id, bool ensureExists, CancellationToken cancellationToken = default)
+    public async Task<Restaurant?> GetById(int id, bool ensureExists, CancellationToken cancellationToken = default)
     {
         Restaurant? restaurant = await context.QuerySingleOrDefaultAsync<Restaurant>(RestaurantRepositoryQueries.GetByIdQuery, new { Id = id });
         if (ensureExists)
@@ -31,8 +31,8 @@ public class RestaurantRepository(DbManagementContext context) : IRestaurantRepo
         return restaurant;
     }
 
-    public Task Delete(int id, CancellationToken cancellationToken = default)
+    public async Task Delete(int id, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        await context.ExecuteAsync(RestaurantRepositoryQueries.DeleteQuery, new { Id = id });
     }
 }

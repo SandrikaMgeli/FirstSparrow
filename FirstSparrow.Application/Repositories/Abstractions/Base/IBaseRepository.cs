@@ -10,7 +10,7 @@ public interface IBaseRepository<TEntity, in TId>
 
     Task Update(TEntity restaurant, CancellationToken cancellationToken = default);
 
-    Task<TEntity?> Get(TId id, bool ensureExists, CancellationToken cancellationToken = default);
+    Task<TEntity?> GetById(TId id, bool ensureExists, CancellationToken cancellationToken = default);
 
     Task Delete(TId id, CancellationToken cancellationToken = default);
 }
