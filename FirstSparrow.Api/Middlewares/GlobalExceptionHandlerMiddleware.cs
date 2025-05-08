@@ -29,7 +29,7 @@ public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<Glob
 
     private async Task HandleAppException(HttpContext context, AppException appException)
     {
-        logger.LogError(appException, nameof(HandleAppException));
+        logger.LogError(appException, "Exception handled in {exceptionHandler}", nameof(HandleAppException));
         RequestMetadata requestMetadata = context.RequestServices.GetRequiredService<RequestMetadata>();
         context.Response.StatusCode = StatusCodes.Status400BadRequest;
         context.Response.ContentType = "application/json";
@@ -42,7 +42,7 @@ public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<Glob
 
     private async Task HandleUnauthorized(HttpContext context, AppException appException)
     {
-        logger.LogError(appException, nameof(HandleUnauthorized));
+        logger.LogError(appException, "Exception handled in {exceptionHandler}", nameof(HandleUnauthorized));
         RequestMetadata requestMetadata = context.RequestServices.GetRequiredService<RequestMetadata>();
         context.Response.StatusCode = StatusCodes.Status401Unauthorized;
         context.Response.ContentType = "application/json";
@@ -55,7 +55,7 @@ public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<Glob
 
     private async Task HandleUnknownException(HttpContext context, Exception ex)
     {
-        logger.LogError(ex, nameof(HandleUnknownException));
+        logger.LogError(ex, "Exception handled in {exceptionHandler}", nameof(HandleUnknownException));
         RequestMetadata requestMetadata = context.RequestServices.GetRequiredService<RequestMetadata>();
         context.Response.StatusCode = StatusCodes.Status500InternalServerError;
         context.Response.ContentType = "application/json";

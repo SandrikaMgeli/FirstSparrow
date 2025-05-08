@@ -6,15 +6,21 @@ public class AppException : Exception
 
     public string? AppMessage { get; private set; }
 
-    public AppException(string message, ExceptionCode code = ExceptionCode.GENERAL_ERROR) : base(message)
+    public AppException(string message, ExceptionCode code) : base(message)
     {
         ExceptionCode = code;
         AppMessage = message;
     }
 
-    public AppException(Exception ex, ExceptionCode code = ExceptionCode.GENERAL_ERROR) : base(ex.Message, ex)
+    public AppException(Exception ex, ExceptionCode code) : base(ex.Message, ex)
     {
         ExceptionCode = code;
         AppMessage = null;
+    }
+
+    public AppException(Exception ex, string message, ExceptionCode code) : base(ex.Message, ex)
+    {
+        ExceptionCode = code;
+        AppMessage = message;
     }
 }
