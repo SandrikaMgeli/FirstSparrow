@@ -53,19 +53,6 @@ public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<Glob
         await context.Response.WriteAsync(json);
     }
 
-    private async Task HandleUnauthorized(HttpContext context, AppException appException)
-    {
-        logger.LogError(appException, "Exception handled in {exceptionHandler}", nameof(HandleUnauthorized));
-        RequestMetadata requestMetadata = context.RequestServices.GetRequiredService<RequestMetadata>();
-        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-        context.Response.ContentType = "application/json";
-
-        ApiProblemDetails apiProblemDetails = ApiProblemDetails.Create(appException, requestMetadata);
-
-        var json = JsonSerializer.Serialize(apiProblemDetails);
-        await context.Response.WriteAsync(json);
-    }
-
     private async Task HandleUnknownException(HttpContext context, Exception ex)
     {
         logger.LogError(ex, "Exception handled in {exceptionHandler}", nameof(HandleUnknownException));
