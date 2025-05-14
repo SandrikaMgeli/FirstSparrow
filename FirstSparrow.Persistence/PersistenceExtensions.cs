@@ -1,6 +1,4 @@
-using FirstSparrow.Application.Repositories.Abstractions;
 using FirstSparrow.Application.Repositories.Abstractions.Base;
-using FirstSparrow.Persistence.Repositories;
 using FirstSparrow.Persistence.Repositories.Base;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

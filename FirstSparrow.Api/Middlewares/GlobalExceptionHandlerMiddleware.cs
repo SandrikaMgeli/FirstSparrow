@@ -13,6 +13,10 @@ public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<Glob
         {
             await next(context);
         }
+        catch (AppException ex) when  (ex.ExceptionCode == ExceptionCode.OBJECT_NOT_FOUND)
+        {
+            await HandleAppNotFoundException(context, ex);
+        }
         catch (AppException ex)
         {
             await HandleAppException(context, ex);
@@ -28,6 +32,19 @@ public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<Glob
         logger.LogError(appException, "Exception handled in {exceptionHandler}", nameof(HandleAppException));
         RequestMetadata requestMetadata = context.RequestServices.GetRequiredService<RequestMetadata>();
         context.Response.StatusCode = StatusCodes.Status400BadRequest;
+        context.Response.ContentType = "application/json";
+
+        ApiProblemDetails apiProblemDetails = ApiProblemDetails.Create(appException, requestMetadata);
+
+        var json = JsonSerializer.Serialize(apiProblemDetails);
+        await context.Response.WriteAsync(json);
+    }
+
+    private async Task HandleAppNotFoundException(HttpContext context, AppException appException)
+    {
+        logger.LogError(appException, "Exception handled in {exceptionHandler}", nameof(HandleAppNotFoundException));
+        RequestMetadata requestMetadata = context.RequestServices.GetRequiredService<RequestMetadata>();
+        context.Response.StatusCode = StatusCodes.Status404NotFound;
         context.Response.ContentType = "application/json";
 
         ApiProblemDetails apiProblemDetails = ApiProblemDetails.Create(appException, requestMetadata);
