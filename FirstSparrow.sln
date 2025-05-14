@@ -12,6 +12,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{1ECA85C0
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FirstSparrow.Infrastructure", "FirstSparrow.Infrastructure\FirstSparrow.Infrastructure.csproj", "{EF750612-B339-4B58-A09E-5CE759BCCE32}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FirstSparrow.Application.Tests", "FirstSparrow.Application.Tests\FirstSparrow.Application.Tests.csproj", "{62FDA851-9974-49D2-A390-CE98F66A1D4D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,11 +36,16 @@ Global
 		{EF750612-B339-4B58-A09E-5CE759BCCE32}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF750612-B339-4B58-A09E-5CE759BCCE32}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF750612-B339-4B58-A09E-5CE759BCCE32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62FDA851-9974-49D2-A390-CE98F66A1D4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62FDA851-9974-49D2-A390-CE98F66A1D4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62FDA851-9974-49D2-A390-CE98F66A1D4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62FDA851-9974-49D2-A390-CE98F66A1D4D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9A3F4D6E-8F76-4075-8AFD-3DCC9915209F} = {5BCB175D-DDD1-4652-9BCA-274704C97FB7}
 		{7BD64B97-44BE-4BF2-A59F-6BF67D9C2586} = {5BCB175D-DDD1-4652-9BCA-274704C97FB7}
 		{D3AAAD37-F0C2-410F-94C2-A7586EC46274} = {5BCB175D-DDD1-4652-9BCA-274704C97FB7}
 		{EF750612-B339-4B58-A09E-5CE759BCCE32} = {5BCB175D-DDD1-4652-9BCA-274704C97FB7}
+		{62FDA851-9974-49D2-A390-CE98F66A1D4D} = {1ECA85C0-F2EC-4112-8E60-6F09A3DA6DCD}
 	EndGlobalSection
 EndGlobal
