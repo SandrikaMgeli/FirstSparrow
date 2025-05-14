@@ -13,10 +13,6 @@ public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<Glob
         {
             await next(context);
         }
-        catch (AppException ex) when (ex.ExceptionCode == ExceptionCode.UNAUTHORIZED)
-        {
-            await HandleUnauthorized(context, ex);
-        }
         catch (AppException ex)
         {
             await HandleAppException(context, ex);

@@ -18,7 +18,7 @@ public static class PersistenceExtensions
         services.AddOptions();
 
         //Repositories
-        services.AddScoped<IRestaurantRepository, RestaurantRepository>();
+
 
         return services;
     }
