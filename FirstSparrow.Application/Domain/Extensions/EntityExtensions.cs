@@ -1,4 +1,3 @@
-using FirstSparrow.Application.Domain.Entities.Base;
 using FirstSparrow.Application.Domain.Exceptions;
 
 namespace FirstSparrow.Application.Domain.Extensions;

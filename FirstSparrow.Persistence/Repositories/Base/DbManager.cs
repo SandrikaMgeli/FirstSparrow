@@ -1,12 +1,9 @@
 using System.Data;
 using FirstSparrow.Application.Repositories.Abstractions.Base;
-using Microsoft.Extensions.Options;
-
 namespace FirstSparrow.Persistence.Repositories.Base;
 
 public class DbManager(
-    DbManagementContext context, 
-    IOptions<ConnectionStringProvider> connectionStringProvider,
+    DbManagementContext context,
     FirstSparrowDbContext dbContext) : IDbManager
 {
     public Task<IDbManagementContext> RunAsync(CancellationToken cancellationToken = default)

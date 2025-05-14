@@ -9,6 +9,8 @@ public static class PersistenceExtensions
 {
     public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddDbContext<FirstSparrowDbContext>();
+
         //Base
         services.AddScoped<DbManagementContext>();
         services.AddScoped<IDbManager, DbManager>();
