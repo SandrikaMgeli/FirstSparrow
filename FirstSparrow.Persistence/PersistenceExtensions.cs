@@ -1,6 +1,5 @@
 using FirstSparrow.Application.Repositories.Abstractions.Base;
 using FirstSparrow.Persistence.Repositories.Base;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -11,8 +10,6 @@ public static class PersistenceExtensions
 {
     public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<FirstSparrowDbContext>();
-
         //Base
         services.AddScoped<DbManagementContext>();
         services.AddScoped<IDbManager, DbManager>();
@@ -37,8 +34,7 @@ public static class PersistenceExtensions
     public static IHost SyncDatabase(this IHost host)
     {
         using IServiceScope scope = host.Services.CreateScope();
-        DbContext context = scope.ServiceProvider.GetRequiredService<FirstSparrowDbContext>();
-        context.Database.Migrate();
+
         return host;
     }
 }

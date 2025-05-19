@@ -28,6 +28,4 @@ app.UseSwaggerUI(options =>
 
 app.MapControllers();
 
-app.SyncDatabase();
-
 app.Run();
