@@ -10,6 +10,7 @@ public class FirstSparrowDbContext(
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseNpgsql(connectionStringOptions.Value.ConnectionString);
+        optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
         optionsBuilder.UseSnakeCaseNamingConvention();
     }
 }

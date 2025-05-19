@@ -10,4 +10,8 @@
       <ProjectReference Include="..\FirstSparrow.Application\FirstSparrow.Application.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.5" />
+    </ItemGroup>
+
 </Project>

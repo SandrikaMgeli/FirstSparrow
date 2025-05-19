@@ -35,7 +35,9 @@ public class BaseRepository<TEntity, TId>(
 
     public async Task<TEntity> GetById(TId id, bool ensureExists, CancellationToken cancellationToken = default)
     {
-        TEntity? entity = await dbContext.Set<TEntity>().SingleOrDefaultAsync(entity => entity.Id.Equals(id), cancellationToken);
+        TEntity? entity = await dbContext.Set<TEntity>()
+            .AsNoTracking()
+            .SingleOrDefaultAsync(entity => entity.Id.Equals(id), cancellationToken);
 
         if (ensureExists)
         {
