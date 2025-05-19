@@ -1,3 +1,4 @@
+using FirstSparrow.Application.Services.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -8,7 +9,7 @@ public class DepositEventListener(
     IServiceScopeFactory serviceScopeFactory,
     ILogger<DepositEventListener> logger) : BackgroundService
 {
-    protected async override Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         logger.LogInformation("Starting deposit event listener.");
 
@@ -16,14 +17,17 @@ public class DepositEventListener(
         {
             try
             {
-                using (IServiceScope scope = serviceScopeFactory.CreateScope())
-                {
-                    
-                }
+                using IServiceScope scope = serviceScopeFactory.CreateScope();
+                IBlockChainService blockChainService = scope.ServiceProvider.GetRequiredService<IBlockChainService>();
+                await blockChainService.FetchDeposits(12, stoppingToken);
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error in deposit event listener.");
+            }
+            finally
+            {
+                await Task.Delay(1000, stoppingToken);
             }
         }
     }
