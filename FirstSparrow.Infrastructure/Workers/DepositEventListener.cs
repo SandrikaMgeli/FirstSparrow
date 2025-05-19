@@ -1,4 +1,5 @@
 using FirstSparrow.Application.Services.Abstractions;
+using FirstSparrow.Application.Services.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -19,7 +20,11 @@ public class DepositEventListener(
             {
                 using IServiceScope scope = serviceScopeFactory.CreateScope();
                 IBlockChainService blockChainService = scope.ServiceProvider.GetRequiredService<IBlockChainService>();
-                await blockChainService.FetchDeposits(12, stoppingToken);
+                await blockChainService.FetchDeposits(new FetchDepositsParams()
+                {
+                    FromBlock = 8312000,
+                    BatchSize = 500,
+                }, stoppingToken);
             }
             catch (Exception ex)
             {
