@@ -1,7 +1,7 @@
 namespace FirstSparrow.Application.Domain.Entities.Base;
 
 public abstract class BaseEntity<TId> 
-    where TId : struct
+    where TId : struct, IComparable<TId>, IEquatable<TId>
 {
     public TId Id { get; set; }
 
