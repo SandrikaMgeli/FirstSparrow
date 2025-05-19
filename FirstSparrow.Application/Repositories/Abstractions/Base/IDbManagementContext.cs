@@ -1,6 +1,6 @@
 namespace FirstSparrow.Application.Repositories.Abstractions.Base;
 
-public interface IDbManagementContext : IAsyncDisposable
+public interface IDbManagementContext : IAsyncDisposable, IDisposable
 {
     Task CommitAsync(CancellationToken cancellationToken = default);
 

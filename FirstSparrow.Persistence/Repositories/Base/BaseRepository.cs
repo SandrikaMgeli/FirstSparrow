@@ -16,17 +16,17 @@ public class BaseRepository<TEntity, TId>(
 {
     public async Task Insert(TEntity entity, CancellationToken cancellationToken = default)
     {
-        if(context.Connection is null) throw new InvalidOperationException("Database connection was not established.");
+        EnsureConnection();
 
-        TId result = await context.Connection.QuerySingleAsync<TId>(insertQuery, entity, context.Transaction);
+        TId result = await context.Connection!.QuerySingleAsync<TId>(insertQuery, entity, context.Transaction);
         entity.Id = result;
     }
 
     public async Task Update(TEntity entity, bool ensureUpdated, CancellationToken cancellationToken = default)
     {
-        if(context.Connection is null) throw new InvalidOperationException("Database connection was not established.");
+        EnsureConnection();
 
-        int effected = await context.Connection.ExecuteAsync(updateQuery, entity, context.Transaction);
+        int effected = await context.Connection!.ExecuteAsync(updateQuery, entity, context.Transaction);
 
         if (ensureUpdated && effected == 0)
         {
@@ -36,9 +36,9 @@ public class BaseRepository<TEntity, TId>(
 
     public async Task<TEntity> GetById(TId id, bool ensureExists, CancellationToken cancellationToken = default)
     {
-        if(context.Connection is null) throw new InvalidOperationException("Database connection was not established.");
+        EnsureConnection();
 
-        TEntity? result = await context.Connection.QuerySingleOrDefaultAsync<TEntity>(getByIdQuery, new { id }, context.Transaction);
+        TEntity? result = await context.Connection!.QuerySingleOrDefaultAsync<TEntity>(getByIdQuery, new { id }, context.Transaction);
 
         if (ensureExists)
         {
@@ -50,13 +50,21 @@ public class BaseRepository<TEntity, TId>(
 
     public async Task Delete(TEntity entity, bool ensureDeleted, CancellationToken cancellationToken = default)
     {
-        if(context.Connection is null) throw new InvalidOperationException("Database connection was not established.");
+        EnsureConnection();
 
-        int effected = await context.Connection.ExecuteAsync(deleteQuery, entity, context.Transaction);
+        int effected = await context.Connection!.ExecuteAsync(deleteQuery, entity, context.Transaction);
 
         if (ensureDeleted && effected == 0)
         {
             throw new InvalidOperationException($"no rows effected while deleting: {typeof(TEntity).FullName}. with id: {entity.Id}.");
+        }
+    }
+
+    protected void EnsureConnection()
+    {
+        if (context.Connection is null)
+        {
+            throw new InvalidOperationException("Database connection was not established.");
         }
     }
 }

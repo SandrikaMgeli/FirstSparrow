@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS metadata
+(
+    id SERIAL PRIMARY KEY,
+    key VARCHAR(100) NOT NULL UNIQUE,
+    value VARCHAR(500) DEFAULT NULL,
+    create_timestamp TIMESTAMPTZ NOT NULL,
+    update_timestamp TIMESTAMPTZ DEFAULT NULL,
+    is_deleted BOOLEAN DEFAULT FALSE NOT NULL
+);

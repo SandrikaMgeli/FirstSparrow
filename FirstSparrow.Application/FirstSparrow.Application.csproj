@@ -17,7 +17,6 @@
     <ItemGroup>
       <Folder Include="Domain\Enums\" />
       <Folder Include="Features\" />
-      <Folder Include="Services\Abstractions\" />
     </ItemGroup>
 
 </Project>

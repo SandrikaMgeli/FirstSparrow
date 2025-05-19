@@ -32,6 +32,11 @@ public class DbManagementContext : IDbManagementContext
         Because Connection and Transaction will be already null.*/
     }
 
+    public void Dispose()
+    {
+        DisposeAsync().GetAwaiter().GetResult();
+    }
+
     private void Reset()
     {
         Transaction = null;

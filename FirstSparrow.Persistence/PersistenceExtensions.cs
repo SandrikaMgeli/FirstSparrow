@@ -1,4 +1,7 @@
+using FirstSparrow.Application.Repositories.Abstractions;
 using FirstSparrow.Application.Repositories.Abstractions.Base;
+using FirstSparrow.Application.Services.Abstractions;
+using FirstSparrow.Persistence.Repositories;
 using FirstSparrow.Persistence.Repositories.Base;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,7 +20,7 @@ public static class PersistenceExtensions
         services.AddOptions();
 
         //Repositories
-
+        services.AddScoped<IMetadataRepository, MetadataRepository>();
 
         return services;
     }
@@ -28,13 +31,15 @@ public static class PersistenceExtensions
             .BindConfiguration("FirstSparrowDb")
             .ValidateDataAnnotations()
             .ValidateOnStart();
+
         return services;
     }
 
     public static IHost SyncDatabase(this IHost host)
     {
         using IServiceScope scope = host.Services.CreateScope();
-
+        IMetadataService metadataService = scope.ServiceProvider.GetRequiredService<IMetadataService>();
+        metadataService.InitializeNecessaryMetadata().GetAwaiter().GetResult();
         return host;
     }
 }

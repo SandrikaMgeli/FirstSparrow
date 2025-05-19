@@ -1,4 +1,6 @@
 using System.Reflection;
+using FirstSparrow.Application.Services;
+using FirstSparrow.Application.Services.Abstractions;
 using FirstSparrow.Application.Shared;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,12 +26,19 @@ public static class ApplicationExtensions
         services.AddScoped<RequestMetadata>();
 
         // Services
+        services.AddSingleton(TimeProvider.System);
+        services.AddScoped<IMetadataService, MetadataService>();
 
         return services;
     }
 
     private static IServiceCollection AddOptions(this IServiceCollection services)
     {
+        services.AddOptions<FirstSparrowConfigs>()
+            .BindConfiguration("FirstSparrowConfigs")
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
         return services;
     }
 }
