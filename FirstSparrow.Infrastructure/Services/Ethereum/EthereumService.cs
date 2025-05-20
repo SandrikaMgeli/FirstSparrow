@@ -1,11 +1,10 @@
-using System.Numerics;
-using System.Text.Json;
 using FirstSparrow.Application.Domain.Entities;
+using FirstSparrow.Application.Domain.Exceptions;
 using FirstSparrow.Application.Services.Abstractions;
 using FirstSparrow.Application.Services.Models;
 using FirstSparrow.Application.Shared;
+using FirstSparrow.Infrastructure.Services.Ethereum.Models;
 using Microsoft.Extensions.Options;
-using Nethereum.ABI.FunctionEncoding.Attributes;
 using Nethereum.Contracts;
 using Nethereum.Hex.HexTypes;
 using Nethereum.JsonRpc.Client;
@@ -34,28 +33,40 @@ public class EthereumService : IBlockChainService
 
     public async Task<List<Deposit>> FetchDeposits(FetchDepositsParams @params, CancellationToken cancellationToken = default)
     {
-        HexBigInteger latestBlock = await _web3.Eth.Blocks.GetBlockNumber.SendRequestAsync(cancellationToken);
-        var depositEvent = _smartContract.GetEvent("Deposit");
-        var filterInput = depositEvent.CreateFilterInput(
-            fromBlock: new BlockParameter(@params.FromBlock),
-            toBlock: new BlockParameter(@params.FromBlock + (ulong)@params.BatchSize)
-        );
-        var events = await depositEvent.GetAllChangesAsync<DepositEventDTO>(filterInput);
-        foreach (var eventLog in events)
+        IEnumerable<DepositEvent> events = await FetchDepositEvents(@params, cancellationToken);
+        return events.Select(@event => new Deposit()
         {
-            try
-            {
-                Console.WriteLine("0x" + Convert.ToHexString(eventLog.Event.Commitment).ToLower());
-                Console.WriteLine(eventLog.Event.Timestamp);
-                Console.WriteLine(eventLog.Event.LeafIndex);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error decoding event at block {eventLog.Log.BlockNumber}: {ex.Message}");
-                // Continue processing other events
-            }
-        }
-        return null;
+            Commitment = "0x" + Convert.ToHexString(@event.Commitment ?? throw new AppException("Deposit's commitment was null", ExceptionCode.GENERAL_ERROR)),
+            CreateTimestamp = DateTime.Now,
+            LeafIndex = @event.LeafIndex,
+        }).ToList();
+    }
+
+    private async Task<IEnumerable<DepositEvent>> FetchDepositEvents(FetchDepositsParams @params, CancellationToken cancellationToken = default)
+    {
+        Event depositEvent = _smartContract.GetEvent(DepositEventConstants.EventName);
+        NewFilterInput filterInput = await GenerateFilter(@params, depositEvent, cancellationToken);
+
+        List<EventLog<DepositEvent>> eventLogs = await depositEvent.GetAllChangesAsync<DepositEvent>(filterInput);
+        return eventLogs.Select(eventLog => eventLog.Event);
+    }
+
+    private async Task<NewFilterInput> GenerateFilter(FetchDepositsParams @params, Event @event, CancellationToken cancellationToken)
+    {
+        ulong latestBlock = await GetLatestBlockNumber(cancellationToken);
+
+        ulong toBlock = Math.Min(@params.FromBlock + (ulong)@params.BatchSize, latestBlock);
+
+        return @event.CreateFilterInput(
+            fromBlock: new BlockParameter(@params.FromBlock),
+            toBlock: new BlockParameter(toBlock)
+        );
+    }
+
+    private async Task<ulong> GetLatestBlockNumber(CancellationToken cancellationToken = default)
+    {
+        HexBigInteger latestBlock = await _web3.Eth.Blocks.GetBlockNumber.SendRequestAsync(cancellationToken);
+        return ulong.Parse(latestBlock.Value.ToString());
     }
 }
 
@@ -84,17 +95,4 @@ public static class EthereumServiceConstants
             ""name"": ""Deposit"",
             ""type"": ""event""
         }]";
-}
-
-[Event("Deposit")]
-public class DepositEventDTO : IEventDTO
-{
-    [Parameter("bytes32", "commitment", 1, true)]
-    public byte[] Commitment { get; set; }
-
-    [Parameter("uint32", "leafIndex", 2, false)]
-    public uint LeafIndex { get; set; }
-
-    [Parameter("uint256", "timestamp", 3, false)]
-    public BigInteger Timestamp { get; set; } //UTC unix timestamp
 }
