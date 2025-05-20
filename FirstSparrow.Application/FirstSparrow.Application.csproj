@@ -16,7 +16,6 @@
 
     <ItemGroup>
       <Folder Include="Domain\Enums\" />
-      <Folder Include="Features\" />
     </ItemGroup>
 
 </Project>
