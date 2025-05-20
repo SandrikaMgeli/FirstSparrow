@@ -24,13 +24,6 @@ public class EthereumService : IBlockChainService
         _smartContract = _web3.Eth.GetContract(EthereumServiceConstants.DepositEventABI, firstSparrowConfigs.Value.SmartContractAddress);
     }
 
-    private static Web3 CreateWeb3Client(IOptions<FirstSparrowConfigs> firstSparrowConfigs, IHttpClientFactory httpClientFactory)
-    {
-        HttpClient client = httpClientFactory.CreateClient("ethereum_rpc");
-        SimpleRpcClient rpcClient = new SimpleRpcClient(new Uri(firstSparrowConfigs.Value.RpcUrl), client);
-        return new Web3(rpcClient);
-    }
-
     public async Task<List<Deposit>> FetchDeposits(FetchDepositsParams @params, CancellationToken cancellationToken = default)
     {
         IEnumerable<DepositEvent> events = await FetchDepositEvents(@params, cancellationToken);
@@ -67,6 +60,13 @@ public class EthereumService : IBlockChainService
     {
         HexBigInteger latestBlock = await _web3.Eth.Blocks.GetBlockNumber.SendRequestAsync(cancellationToken);
         return ulong.Parse(latestBlock.Value.ToString());
+    }
+
+    private static Web3 CreateWeb3Client(IOptions<FirstSparrowConfigs> firstSparrowConfigs, IHttpClientFactory httpClientFactory)
+    {
+        HttpClient client = httpClientFactory.CreateClient("ethereum_rpc");
+        SimpleRpcClient rpcClient = new SimpleRpcClient(new Uri(firstSparrowConfigs.Value.RpcUrl), client);
+        return new Web3(rpcClient);
     }
 }
 
