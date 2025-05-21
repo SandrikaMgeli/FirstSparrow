@@ -1,3 +1,4 @@
+using System.Numerics;
 using FirstSparrow.Application.Domain.Entities;
 using FirstSparrow.Application.Domain.Exceptions;
 using FirstSparrow.Application.Services.Abstractions;
@@ -6,6 +7,7 @@ using FirstSparrow.Application.Shared;
 using FirstSparrow.Infrastructure.Services.Ethereum.Models;
 using Microsoft.Extensions.Options;
 using Nethereum.Contracts;
+using Nethereum.Contracts.ContractHandlers;
 using Nethereum.Hex.HexTypes;
 using Nethereum.JsonRpc.Client;
 using Nethereum.RPC.Eth.DTOs;
@@ -15,13 +17,17 @@ namespace FirstSparrow.Infrastructure.Services.Ethereum;
 
 public class EthereumService : IBlockChainService
 {
+    private readonly TimeProvider _timeProvider;
     private readonly Web3 _web3;
     private readonly Contract _smartContract;
+    private readonly IOptions<FirstSparrowConfigs> _firstSparrowConfigs;
 
-    public EthereumService(IOptions<FirstSparrowConfigs> firstSparrowConfigs, IHttpClientFactory httpClientFactory)
+    public EthereumService(IOptions<FirstSparrowConfigs> firstSparrowConfigs, IHttpClientFactory httpClientFactory, TimeProvider timeProvider)
     {
+        _timeProvider = timeProvider;
         _web3 = CreateWeb3Client(firstSparrowConfigs, httpClientFactory);
         _smartContract = _web3.Eth.GetContract(EthereumServiceConstants.DepositEventABI, firstSparrowConfigs.Value.SmartContractAddress);
+        _firstSparrowConfigs = firstSparrowConfigs;
     }
 
     public async Task<List<Deposit>> FetchDeposits(FetchDepositsParams @params, CancellationToken cancellationToken = default)
@@ -30,9 +36,38 @@ public class EthereumService : IBlockChainService
         return events.Select(@event => new Deposit()
         {
             Commitment = "0x" + Convert.ToHexString(@event.Commitment ?? throw new AppException("Deposit's commitment was null", ExceptionCode.GENERAL_ERROR)),
-            CreateTimestamp = DateTime.Now,
-            LeafIndex = @event.LeafIndex,
+            CreateTimestamp = _timeProvider.GetUtcNow().DateTime,
+            UpdateTimestamp = null,
+            DepositTimestamp = DateTimeOffset.FromUnixTimeSeconds(@event.Timestamp).UtcDateTime,
+            Index = @event.LeafIndex,
+            Layer = 0,
+            IsDeleted = false,
         }).ToList();
+    }
+
+    public async Task<BigInteger> HashConcat(BigInteger left, BigInteger right)
+    {
+        byte[] leftAsBytes = new byte[32];
+        byte[] rightAsBytes = new byte[32];
+
+        byte[] value1Bytes = left.ToByteArray();
+        byte[] value2Bytes = right.ToByteArray();
+
+        // Ensure correct endianness and padding to 32 bytes
+        Array.Copy(value1Bytes, 0, leftAsBytes, 32 - Math.Min(32, value1Bytes.Length), Math.Min(32, value1Bytes.Length));
+        Array.Copy(value2Bytes, 0, rightAsBytes, 32 - Math.Min(32, value2Bytes.Length), Math.Min(32, value2Bytes.Length));
+
+        PoseidonFunction poseidonFunction = new PoseidonFunction
+        {
+            Input = new byte[][] { value1Bytes, value2Bytes }
+        };
+
+        IContractQueryHandler<PoseidonFunction> handler = _web3.Eth.GetContractQueryHandler<PoseidonFunction>();
+        byte[] result = await handler.QueryAsync<byte[]>(_firstSparrowConfigs.Value.HasherSmartContractAddress, poseidonFunction);
+
+        BigInteger resultAsBigInt = new BigInteger(result.Reverse().ToArray());
+
+        return resultAsBigInt;
     }
 
     private async Task<IEnumerable<DepositEvent>> FetchDepositEvents(FetchDepositsParams @params, CancellationToken cancellationToken = default)

@@ -13,7 +13,7 @@ public class DepositEvent : IEventDTO
     public uint LeafIndex { get; set; }
 
     [Parameter("uint256", "timestamp", 3, false)]
-    public BigInteger Timestamp { get; set; } 
+    public long Timestamp { get; set; } 
 }
 
 public static class DepositEventConstants

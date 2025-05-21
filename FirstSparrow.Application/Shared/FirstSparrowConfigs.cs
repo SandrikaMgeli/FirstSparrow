@@ -22,4 +22,7 @@ public class FirstSparrowConfigs
 
     [Required]
     public string RpcUrl { get; set; }
+
+    [Required]
+    public string HasherSmartContractAddress { get; set; }
 }
