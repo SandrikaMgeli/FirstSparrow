@@ -1,4 +1,5 @@
 using FirstSparrow.Application.Domain.Entities;
+using FirstSparrow.Application.Domain.Models;
 using FirstSparrow.Application.Repositories.Abstractions;
 using FirstSparrow.Application.Services.Abstractions;
 using FirstSparrow.Application.Services.Models;
@@ -8,22 +9,34 @@ using MediatR;
 namespace FirstSparrow.Application.Features.Deposits.SyncDeposits;
 
 public class SyncDepositsCommandHandler(
-    IDepositRepository depositRepository,
     IMetadataRepository metadataRepository,
-    IBlockChainService blockChainService) : IRequestHandler<SyncDepositsCommand, SyncDepositsResponse>
+    IBlockChainService blockChainService,
+    IDepositService depositService) : IRequestHandler<SyncDepositsCommand>
 {
     private const int BatchSize = 500;
-    public async Task<SyncDepositsResponse> Handle(SyncDepositsCommand request, CancellationToken cancellationToken)
+
+    public async Task Handle(SyncDepositsCommand request, CancellationToken cancellationToken)
     {
         ulong fromBlock = await GetLastCheckedBlock(cancellationToken);
 
+        List<Deposit> deposits = await FetchDeposits(fromBlock, cancellationToken);
+
+        foreach (Deposit deposit in deposits)
+        {
+            await depositService.ProcessDeposit(deposit, cancellationToken);
+        }
+    }
+
+    private async Task<List<Deposit>> FetchDeposits(ulong fromBlock, CancellationToken cancellationToken)
+    {
         List<Deposit> deposits = await blockChainService.FetchDeposits(new FetchDepositsParams()
         {
             FromBlock = fromBlock, 
             BatchSize = BatchSize,
         }, cancellationToken);
 
-        throw new NotImplementedException();
+        // Ensures that Deposits are ordered
+        return deposits.OrderBy(d => d.Index).ToList();
     }
 
     private async Task<ulong> GetLastCheckedBlock(CancellationToken cancellationToken)

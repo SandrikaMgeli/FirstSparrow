@@ -28,6 +28,7 @@ public static class ApplicationExtensions
         // Services
         services.AddSingleton(TimeProvider.System);
         services.AddScoped<IMetadataService, MetadataService>();
+        services.AddScoped<IDepositService, DepositService>();
 
         return services;
     }

@@ -12,7 +12,7 @@ public class BaseRepository<TEntity, TId>(
     string updateQuery,
     string getByIdQuery) : IBaseRepository<TEntity, TId>
     where TId : struct, IComparable<TId>, IEquatable<TId>
-    where TEntity : BaseEntity<TId>, new()
+    where TEntity : BaseEntity<TId>
 {
     public async Task Insert(TEntity entity, CancellationToken cancellationToken = default)
     {
@@ -38,7 +38,7 @@ public class BaseRepository<TEntity, TId>(
     {
         EnsureConnection();
 
-        TEntity? result = await context.Connection!.QuerySingleOrDefaultAsync<TEntity>(getByIdQuery, new { id }, context.Transaction);
+        TEntity? result = await context.Connection!.QuerySingleOrDefaultAsync<TEntity>(getByIdQuery, new { Id = id }, context.Transaction);
 
         if (ensureExists)
         {
@@ -48,15 +48,15 @@ public class BaseRepository<TEntity, TId>(
         return result!;
     }
 
-    public async Task Delete(TEntity entity, bool ensureDeleted, CancellationToken cancellationToken = default)
+    public async Task Delete(TId id, bool ensureDeleted, CancellationToken cancellationToken = default)
     {
         EnsureConnection();
 
-        int effected = await context.Connection!.ExecuteAsync(deleteQuery, entity, context.Transaction);
+        int effected = await context.Connection!.ExecuteAsync(deleteQuery, new { Id = id }, context.Transaction);
 
         if (ensureDeleted && effected == 0)
         {
-            throw new InvalidOperationException($"no rows effected while deleting: {typeof(TEntity).FullName}. with id: {entity.Id}.");
+            throw new InvalidOperationException($"no rows effected while deleting: {typeof(TEntity).FullName}. with id: {id}.");
         }
     }
 

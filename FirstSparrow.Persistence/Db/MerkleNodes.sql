@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS merkle_nodes
     commitment VARCHAR(500) NOT NULL,
     index BIGINT NOT NULL,
     layer INTEGER NOT NULL,
-    deposit_timestamp TIMESTAMPTZ NOT NULL,
+    deposit_timestamp TIMESTAMPTZ DEFAULT NULL,
     create_timestamp TIMESTAMPTZ NOT NULL,
     update_timestamp TIMESTAMPTZ DEFAULT NULL,
     is_deleted BOOLEAN DEFAULT FALSE NOT NULL

@@ -21,7 +21,7 @@ public static class PersistenceExtensions
 
         //Repositories
         services.AddScoped<IMetadataRepository, MetadataRepository>();
-        services.AddScoped<IDepositRepository, DepositRepository>();
+        services.AddScoped<IMerkleNodeRepository, MerkleNodeRepository>();
 
         return services;
     }

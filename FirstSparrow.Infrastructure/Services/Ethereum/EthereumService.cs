@@ -1,6 +1,7 @@
 using System.Numerics;
 using FirstSparrow.Application.Domain.Entities;
 using FirstSparrow.Application.Domain.Exceptions;
+using FirstSparrow.Application.Domain.Models;
 using FirstSparrow.Application.Services.Abstractions;
 using FirstSparrow.Application.Services.Models;
 using FirstSparrow.Application.Shared;
@@ -40,7 +41,6 @@ public class EthereumService : IBlockChainService
             UpdateTimestamp = null,
             DepositTimestamp = DateTimeOffset.FromUnixTimeSeconds(@event.Timestamp).UtcDateTime,
             Index = @event.LeafIndex,
-            Layer = 0,
             IsDeleted = false,
         }).ToList();
     }

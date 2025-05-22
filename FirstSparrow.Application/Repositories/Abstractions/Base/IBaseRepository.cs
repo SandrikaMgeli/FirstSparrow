@@ -4,7 +4,7 @@ namespace FirstSparrow.Application.Repositories.Abstractions.Base;
 
 public interface IBaseRepository<TEntity, TId>
     where TId : struct, IComparable<TId>, IEquatable<TId>
-    where TEntity : BaseEntity<TId>, new()
+    where TEntity : BaseEntity<TId>
 {
     Task Insert(TEntity entity, CancellationToken cancellationToken = default);
 
@@ -12,5 +12,5 @@ public interface IBaseRepository<TEntity, TId>
 
     Task<TEntity> GetById(TId id, bool ensureExists, CancellationToken cancellationToken = default);
 
-    Task Delete(TEntity entity, bool ensureDeleted, CancellationToken cancellationToken = default);
+    Task Delete(TId id, bool ensureDeleted, CancellationToken cancellationToken = default);
 }

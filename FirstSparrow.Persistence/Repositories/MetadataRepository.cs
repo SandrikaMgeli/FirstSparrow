@@ -58,7 +58,17 @@ public static class MetadataRepositorySql
                                         )
                                     RETURNING id;";
 
-    public const string GetById = null;
+    public const string GetById = $@"
+                                    SELECT 
+                                        id as {nameof(Metadata.Id)},
+                                        key as {nameof(Metadata.Key)},
+                                        value as {nameof(Metadata.Value)},
+                                        create_timestamp as {nameof(Metadata.CreateTimestamp)},
+                                        update_timestamp as {nameof(Metadata.UpdateTimestamp)},
+                                        is_deleted as {nameof(Metadata.IsDeleted)}
+                                    FROM metadata
+                                    WHERE id = @{nameof(Metadata.Id)}
+                                      AND is_deleted = FALSE;";
 
     public const string Update = @$"
                                     UPDATE metadata
@@ -70,5 +80,9 @@ public static class MetadataRepositorySql
                                             is_deleted = @{nameof(Metadata.IsDeleted)}
                                     WHERE id = @{nameof(Metadata.Id)};";
 
-    public const string Delete = null;
+    public const string Delete = @$"
+                                    UPDATE metadata
+                                        SET
+                                            is_deleted = FALSE
+                                    WHERE id = @{nameof(Metadata.Id)};";
 }

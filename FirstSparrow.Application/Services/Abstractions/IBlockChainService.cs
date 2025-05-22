@@ -1,5 +1,6 @@
 using System.Numerics;
 using FirstSparrow.Application.Domain.Entities;
+using FirstSparrow.Application.Domain.Models;
 using FirstSparrow.Application.Services.Models;
 
 namespace FirstSparrow.Application.Services.Abstractions;
