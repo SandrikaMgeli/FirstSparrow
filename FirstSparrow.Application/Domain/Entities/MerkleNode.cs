@@ -10,7 +10,7 @@ public class MerkleNode : BaseEntity<int>
 
     public string Commitment { get; set; }
 
-    public uint Index { get; set; }
+    public long Index { get; set; }
 
     public int Layer { get; private set; }
 
@@ -25,7 +25,7 @@ public class MerkleNode : BaseEntity<int>
     }
 #pragma warning restore CS8618
 
-    public uint CalculatePreviousDepositIndex()
+    public long CalculatePreviousDepositIndex()
     {
         EnsureNodeIsDeposit();
 
@@ -37,30 +37,30 @@ public class MerkleNode : BaseEntity<int>
         return Index - 1;
     }
 
-    public (uint neighbourIndex, int neighbourLayer) CalculateNeighbourCoordinates()
+    public (long neighbourIndex, int neighbourLayer) CalculateNeighbourCoordinates()
     {
         if (IsRoot)
         {
             throw new AppException("Node is root and doesn't have neighbour", ExceptionCode.GENERAL_ERROR);
         }
 
-        uint neighbourIndex = Index % 2 == 1 ? Index - 1 : Index + 1;
+        long neighbourIndex = Index % 2 == 1 ? Index - 1 : Index + 1;
         int layer = Layer;
 
         return (neighbourIndex, layer);
     }
     
 
-    public (uint index, int layer) CalculateParentCoordinate()
+    public (long index, int layer) CalculateParentCoordinate()
     {
         return (Index / 2, Layer + 1);
     }
 
-    private void EnsureNodeIsDeposit()
+    public void EnsureNodeIsDeposit()
     {
         if (Layer != 0)
         {
-            throw new AppException("Merkle node layer must be zero", ExceptionCode.GENERAL_ERROR);
+            throw new AppException("Deposit's node layer must be zero", ExceptionCode.GENERAL_ERROR);
         }
     }
 

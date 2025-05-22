@@ -9,7 +9,7 @@ using FirstSparrow.Persistence.Repositories.Base;
 namespace FirstSparrow.Persistence.Repositories;
 
 public class MerkleNodeRepository(
-    DbManagementContext context) : BaseRepository<MerkleNode, int>(context, DepositRepositorySql.Insert, DepositRepositorySql.Delete, DepositRepositorySql.Update, DepositRepositorySql.GetById), IMerkleNodeRepository
+    DbManagementContext context) : BaseRepository<MerkleNode, int>(context, MerkleNodeRepositorySql.Insert, MerkleNodeRepositorySql.Delete, MerkleNodeRepositorySql.Update, MerkleNodeRepositorySql.GetById), IMerkleNodeRepository
 {
     private readonly BigInteger[] _zeros =
     [
@@ -35,12 +35,12 @@ public class MerkleNodeRepository(
         BigInteger.Parse("8055374341341620501424923482910636721817757020788836089492629714380498049891"),
     ];
 
-    public async Task<MerkleNode?> GetByNodeCoordinate(uint index, int layer, bool ensureExists, CancellationToken cancellationToken = default)
+    public async Task<MerkleNode?> GetByNodeCoordinate(long index, int layer, bool ensureExists, CancellationToken cancellationToken = default)
     {
         EnsureConnection();
 
         MerkleNode? merkleNode = await context.Connection!.QuerySingleOrDefaultAsync<MerkleNode>(
-            MetadataRepositorySql.GetByKey,
+            MerkleNodeRepositorySql.GetByNodeCoordinate,
             new
             {
                 Index = index,
@@ -59,7 +59,7 @@ public class MerkleNodeRepository(
     {
         EnsureConnection();
 
-        (uint neighbourIndex, int neighbourLayer) = merkleNode.CalculateNeighbourCoordinates();
+        (long neighbourIndex, int neighbourLayer) = merkleNode.CalculateNeighbourCoordinates();
 
         MerkleNode? neighbourNode = await GetByNodeCoordinate(neighbourIndex, neighbourLayer, false, cancellationToken);
 
@@ -81,7 +81,7 @@ public class MerkleNodeRepository(
     }
 }
 
-public static class DepositRepositorySql
+public static class MerkleNodeRepositorySql
 {
     public const string Insert = @$"
                                     INSERT INTO merkle_nodes
@@ -103,7 +103,8 @@ public static class DepositRepositorySql
                                         @{nameof(MerkleNode.CreateTimestamp)},
                                         @{nameof(MerkleNode.UpdateTimestamp)},
                                         @{nameof(MerkleNode.IsDeleted)}
-                                    );";
+                                    )
+                                    RETURNING id;";
 
     public const string GetById = $@"
                                     SELECT

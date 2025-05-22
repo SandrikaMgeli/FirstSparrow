@@ -1,6 +1,5 @@
-using System.Numerics;
-using System.Reflection;
 using FirstSparrow.Application.Domain.Entities;
+using FirstSparrow.Application.Extensions;
 using FirstSparrow.Application.Repositories.Abstractions;
 using FirstSparrow.Application.Repositories.Abstractions.Base;
 using FirstSparrow.Application.Services.Abstractions;
@@ -30,7 +29,7 @@ public class MetadataService(
         if (uint.Parse(metadata.Value) < firstSparrowConfigs.Value.InitialBlockIndex)
         {
             metadata.Value = firstSparrowConfigs.Value.InitialBlockIndex.ToString();
-            metadata.UpdateTimestamp = timeProvider.GetUtcNow().DateTime;
+            metadata.UpdateTimestamp = timeProvider.GetUtcNowDateTime();
     
             await metadataRepository.Update(metadata, true, cancellationToken);
         }
@@ -46,7 +45,7 @@ public class MetadataService(
             {
                 Key = blockIndexKey,
                 Value = firstSparrowConfigs.Value.InitialBlockIndex.ToString(),
-                CreateTimestamp = timeProvider.GetUtcNow().DateTime,
+                CreateTimestamp = timeProvider.GetUtcNowDateTime(),
                 UpdateTimestamp = null,
                 IsDeleted = false,
             };

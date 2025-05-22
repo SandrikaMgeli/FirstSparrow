@@ -1,9 +1,11 @@
+using System.Data;
 using System.Numerics;
 using FirstSparrow.Application.Domain.Entities;
 using FirstSparrow.Application.Domain.Exceptions;
 using FirstSparrow.Application.Domain.Models;
 using FirstSparrow.Application.Extensions;
 using FirstSparrow.Application.Repositories.Abstractions;
+using FirstSparrow.Application.Repositories.Abstractions.Base;
 using FirstSparrow.Application.Services.Abstractions;
 
 namespace FirstSparrow.Application.Services;
@@ -11,11 +13,16 @@ namespace FirstSparrow.Application.Services;
 public class DepositService(
     IMerkleNodeRepository merkleNodeRepository,
     TimeProvider timeProvider,
-    IBlockChainService blockChainService) : IDepositService
+    IBlockChainService blockChainService,
+    IDbManager dbManager) : IDepositService
 {
     public async Task ProcessDeposit(Deposit deposit, CancellationToken cancellationToken)
     {
-        EnsureNodeIsDeposit(deposit);
+        await using IDbManagementContext context = await dbManager.RunWithTransactionAsync(IsolationLevel.ReadCommitted, cancellationToken);
+        
+        deposit.EnsureNodeIsDeposit();
+        await EnsureDepositNotExists(deposit, cancellationToken);
+
         await EnsurePreviousDepositExists(deposit, cancellationToken);
 
         await merkleNodeRepository.Insert(deposit, cancellationToken);
@@ -23,11 +30,12 @@ public class DepositService(
         await UpdateTreeRecursively(deposit, cancellationToken);
     }
 
-    private static void EnsureNodeIsDeposit(MerkleNode merkleNode)
+    private async Task EnsureDepositNotExists(Deposit deposit, CancellationToken cancellationToken)
     {
-        if (merkleNode.Layer != 0)
+        MerkleNode? currentNode = await merkleNodeRepository.GetByNodeCoordinate(deposit.Index, deposit.Layer, false, cancellationToken);
+        if (currentNode is not null)
         {
-            throw new AppException("Merkle node layer must be zero", ExceptionCode.GENERAL_ERROR);
+            throw new AppException("Deposit already exists", ExceptionCode.DEPOSIT_ALREADY_EXISTS);
         }
     }
 
@@ -38,7 +46,7 @@ public class DepositService(
             return;
         }
 
-        uint previousDepositIndex = merkleNode.CalculatePreviousDepositIndex();
+        long previousDepositIndex = merkleNode.CalculatePreviousDepositIndex();
 
         MerkleNode? previousNode = await merkleNodeRepository.GetByNodeCoordinate(index: previousDepositIndex, layer: 0, ensureExists: false, cancellationToken);
 
@@ -61,7 +69,7 @@ public class DepositService(
 
     private async Task<MerkleNode> UpdateOrCreateParent(MerkleNode merkleNode, MerkleNode neighbour, CancellationToken cancellationToken)
     {
-        (uint parentIndex, int parentLayer) = merkleNode.CalculateParentCoordinate();
+        (long parentIndex, int parentLayer) = merkleNode.CalculateParentCoordinate();
 
         MerkleNode? parentNode = await merkleNodeRepository.GetByNodeCoordinate(parentIndex, parentLayer, false, cancellationToken);
 
@@ -74,7 +82,7 @@ public class DepositService(
             {
                 Commitment = parentNewCommitment.ToHex(),
                 Index = parentIndex,
-                CreateTimestamp = timeProvider.GetUtcNow().DateTime,
+                CreateTimestamp = timeProvider.GetUtcNowDateTime(),
                 UpdateTimestamp = null,
                 IsDeleted = false,
                 DepositTimestamp = null,
@@ -85,7 +93,7 @@ public class DepositService(
 
         // Update parent
         parentNode.Commitment = parentNewCommitment.ToHex();
-        parentNode.UpdateTimestamp = timeProvider.GetUtcNow().DateTime;
+        parentNode.UpdateTimestamp = timeProvider.GetUtcNowDateTime();
         await merkleNodeRepository.Update(parentNode, true, cancellationToken);
 
         return parentNode;
