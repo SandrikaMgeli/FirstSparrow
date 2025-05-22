@@ -1,4 +1,3 @@
-using System.Data;
 using System.Numerics;
 using FirstSparrow.Application.Domain.Entities;
 using FirstSparrow.Application.Domain.Exceptions;
@@ -18,8 +17,10 @@ public class DepositService(
 {
     public async Task ProcessDeposit(Deposit deposit, CancellationToken cancellationToken)
     {
-        await using IDbManagementContext context = await dbManager.RunWithTransactionAsync(IsolationLevel.ReadCommitted, cancellationToken);
-        
+        // TODO: Take lock here
+        //await using IDbManagementContext context = await dbManager.RunWithTransactionAsync(IsolationLevel.ReadCommitted, cancellationToken);
+        await using IDbManagementContext context = await dbManager.RunAsync(cancellationToken);
+
         deposit.EnsureNodeIsDeposit();
         await EnsureDepositNotExists(deposit, cancellationToken);
 
@@ -73,7 +74,9 @@ public class DepositService(
 
         MerkleNode? parentNode = await merkleNodeRepository.GetByNodeCoordinate(parentIndex, parentLayer, false, cancellationToken);
 
-        BigInteger parentNewCommitment = await blockChainService.HashConcat(merkleNode.GetCommitmentAsBigInteger(), neighbour.GetCommitmentAsBigInteger());
+        (MerkleNode left, MerkleNode right) = merkleNode.Index % 2 == 1 ? (neighbour, merkleNode) : (merkleNode, neighbour);
+
+        BigInteger parentNewCommitment = await blockChainService.HashConcat(left.GetCommitmentAsBigInteger(), right.GetCommitmentAsBigInteger());
 
         if (parentNode is null)
         {

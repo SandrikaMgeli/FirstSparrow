@@ -1,5 +1,4 @@
 using System.Numerics;
-using FirstSparrow.Application.Domain.Entities;
 using FirstSparrow.Application.Domain.Exceptions;
 using FirstSparrow.Application.Domain.Models;
 using FirstSparrow.Application.Extensions;
@@ -7,6 +6,7 @@ using FirstSparrow.Application.Services.Abstractions;
 using FirstSparrow.Application.Services.Models;
 using FirstSparrow.Application.Shared;
 using FirstSparrow.Infrastructure.Services.Ethereum.Models;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Nethereum.Contracts;
 using Nethereum.Contracts.ContractHandlers;
@@ -20,13 +20,19 @@ namespace FirstSparrow.Infrastructure.Services.Ethereum;
 public class EthereumService : IBlockChainService
 {
     private readonly TimeProvider _timeProvider;
+    private readonly ILogger<EthereumService> _logger;
     private readonly Web3 _web3;
     private readonly Contract _smartContract;
     private readonly IOptions<FirstSparrowConfigs> _firstSparrowConfigs;
 
-    public EthereumService(IOptions<FirstSparrowConfigs> firstSparrowConfigs, IHttpClientFactory httpClientFactory, TimeProvider timeProvider)
+    public EthereumService(
+        IOptions<FirstSparrowConfigs> firstSparrowConfigs,
+        IHttpClientFactory httpClientFactory,
+        TimeProvider timeProvider,
+        ILogger<EthereumService> logger)
     {
         _timeProvider = timeProvider;
+        _logger = logger;
         _web3 = CreateWeb3Client(firstSparrowConfigs, httpClientFactory);
         _smartContract = _web3.Eth.GetContract(EthereumServiceConstants.DepositEventABI, firstSparrowConfigs.Value.SmartContractAddress);
         _firstSparrowConfigs = firstSparrowConfigs;
@@ -48,19 +54,9 @@ public class EthereumService : IBlockChainService
 
     public async Task<BigInteger> HashConcat(BigInteger left, BigInteger right)
     {
-        byte[] leftAsBytes = new byte[32];
-        byte[] rightAsBytes = new byte[32];
-
-        byte[] value1Bytes = left.ToByteArray();
-        byte[] value2Bytes = right.ToByteArray();
-
-        // Ensure correct endianness and padding to 32 bytes
-        Array.Copy(value1Bytes, 0, leftAsBytes, 32 - Math.Min(32, value1Bytes.Length), Math.Min(32, value1Bytes.Length));
-        Array.Copy(value2Bytes, 0, rightAsBytes, 32 - Math.Min(32, value2Bytes.Length), Math.Min(32, value2Bytes.Length));
-
         PoseidonFunction poseidonFunction = new PoseidonFunction
         {
-            Input = new byte[][] { value1Bytes, value2Bytes }
+            Input = new byte[][] { new HexBigInteger(left), new HexBigInteger(right) }
         };
 
         IContractQueryHandler<PoseidonFunction> handler = _web3.Eth.GetContractQueryHandler<PoseidonFunction>();
