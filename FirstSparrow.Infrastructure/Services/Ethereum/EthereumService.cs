@@ -43,7 +43,7 @@ public class EthereumService : IBlockChainService
         IEnumerable<DepositEvent> events = await FetchDepositEvents(@params, cancellationToken);
         return events.Select(@event => new Deposit()
         {
-            Commitment = "0x" + Convert.ToHexString(@event.Commitment ?? throw new AppException("Deposit's commitment was null", ExceptionCode.GENERAL_ERROR)),
+            Commitment = @event.Commitment.HasValue ? @event.Commitment.Value.ToHexForBytes32() : throw new AppException("Deposit's commitment was null", ExceptionCode.GENERAL_ERROR),
             CreateTimestamp = _timeProvider.GetUtcNowDateTime(),
             UpdateTimestamp = null,
             DepositTimestamp = DateTimeOffset.FromUnixTimeSeconds(@event.Timestamp).UtcDateTime,
