@@ -1,6 +1,9 @@
+using System.Data;
 using FirstSparrow.Application.Domain.Entities;
+using FirstSparrow.Application.Domain.Exceptions;
 using FirstSparrow.Application.Domain.Models;
 using FirstSparrow.Application.Repositories.Abstractions;
+using FirstSparrow.Application.Repositories.Abstractions.Base;
 using FirstSparrow.Application.Services.Abstractions;
 using FirstSparrow.Application.Services.Models;
 using FirstSparrow.Application.Shared;
@@ -11,38 +14,58 @@ namespace FirstSparrow.Application.Features.Deposits.SyncDeposits;
 public class SyncDepositsCommandHandler(
     IMetadataRepository metadataRepository,
     IBlockChainService blockChainService,
-    IDepositService depositService) : IRequestHandler<SyncDepositsCommand>
+    IDepositService depositService,
+    IDbManager dbManager) : IRequestHandler<SyncDepositsCommand>
 {
     private const int BatchSize = 500;
 
     public async Task Handle(SyncDepositsCommand request, CancellationToken cancellationToken)
     {
-        ulong fromBlock = await GetLastCheckedBlock(cancellationToken);
+        // Take lock here
+        await using IDbManagementContext context = await dbManager.RunWithTransactionAsync(IsolationLevel.ReadCommitted, cancellationToken);
 
-        List<Deposit> deposits = await FetchDeposits(fromBlock, cancellationToken);
+        (ulong fromBlock, Metadata fromBlockEntity) = await GetLastCheckedBlock(cancellationToken);
+
+        (List<Deposit> deposits, uint lastBlockCheckedByFetchDeposit) = await FetchDeposits(fromBlock, cancellationToken);
 
         foreach (Deposit deposit in deposits)
         {
+            await ProcessDeposit(deposit, cancellationToken);
+        }
+
+        // Update last checked block in metadata
+        fromBlockEntity.Value = lastBlockCheckedByFetchDeposit.ToString();
+        await metadataRepository.Update(fromBlockEntity, true, cancellationToken);
+    }
+
+    private async Task ProcessDeposit(Deposit deposit, CancellationToken cancellationToken)
+    {
+        try
+        {
             await depositService.ProcessDeposit(deposit, cancellationToken);
+        }
+        catch (AppException ex) when (ex.ExceptionCode == ExceptionCode.DEPOSIT_ALREADY_EXISTS)
+        {
+            // Ignore deposit already exists error.
         }
     }
 
-    private async Task<List<Deposit>> FetchDeposits(ulong fromBlock, CancellationToken cancellationToken)
+    private async Task<(List<Deposit> deposits, uint lastBlockChecked)> FetchDeposits(ulong fromBlock, CancellationToken cancellationToken)
     {
-        List<Deposit> deposits = await blockChainService.FetchDeposits(new FetchDepositsParams()
+        (List<Deposit> deposits, uint lastBlockChecked) = await blockChainService.FetchDeposits(new FetchDepositsParams()
         {
             FromBlock = fromBlock, 
             BatchSize = BatchSize,
         }, cancellationToken);
 
-        // Ensures that Deposits are ordered
-        return deposits.OrderBy(d => d.Index).ToList();
+        // Ensure deposits Order by Index in ascending
+        return (deposits.OrderBy(d => d.Index).ToList(), lastBlockChecked);
     }
 
-    private async Task<ulong> GetLastCheckedBlock(CancellationToken cancellationToken)
+    private async Task<(ulong lastCheckedBlock, Metadata metadataEntity)> GetLastCheckedBlock(CancellationToken cancellationToken)
     {
         Metadata metadata = (await metadataRepository.GetByKey(nameof(FirstSparrowConfigs.InitialBlockIndex), true, cancellationToken))!;
 
-        return ulong.Parse(metadata.Value);
+        return (ulong.Parse(metadata.Value), metadata);
     }
 }

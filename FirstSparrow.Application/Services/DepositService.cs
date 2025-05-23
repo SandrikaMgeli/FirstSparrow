@@ -5,7 +5,6 @@ using FirstSparrow.Application.Domain.Exceptions;
 using FirstSparrow.Application.Domain.Models;
 using FirstSparrow.Application.Extensions;
 using FirstSparrow.Application.Repositories.Abstractions;
-using FirstSparrow.Application.Repositories.Abstractions.Base;
 using FirstSparrow.Application.Services.Abstractions;
 
 namespace FirstSparrow.Application.Services;
@@ -13,14 +12,10 @@ namespace FirstSparrow.Application.Services;
 public class DepositService(
     IMerkleNodeRepository merkleNodeRepository,
     TimeProvider timeProvider,
-    IBlockChainService blockChainService,
-    IDbManager dbManager) : IDepositService
+    IBlockChainService blockChainService) : IDepositService
 {
     public async Task ProcessDeposit(Deposit deposit, CancellationToken cancellationToken)
     {
-        // TODO: Take lock here
-        await using IDbManagementContext context = await dbManager.RunWithTransactionAsync(IsolationLevel.ReadCommitted, cancellationToken);
-
         deposit.EnsureNodeIsDeposit();
         await EnsureDepositNotExists(deposit, cancellationToken);
 

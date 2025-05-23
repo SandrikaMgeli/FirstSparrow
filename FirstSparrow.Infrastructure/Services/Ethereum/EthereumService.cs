@@ -38,10 +38,10 @@ public class EthereumService : IBlockChainService
         _firstSparrowConfigs = firstSparrowConfigs;
     }
 
-    public async Task<List<Deposit>> FetchDeposits(FetchDepositsParams @params, CancellationToken cancellationToken = default)
+    public async Task<(List<Deposit> deposits, uint lastBlockChecked)> FetchDeposits(FetchDepositsParams @params, CancellationToken cancellationToken = default)
     {
-        IEnumerable<DepositEvent> events = await FetchDepositEvents(@params, cancellationToken);
-        return events.Select(@event => new Deposit()
+        (IEnumerable<DepositEvent> events, uint lastBlockChecked) = await FetchDepositEvents(@params, cancellationToken);
+        return (events.Select(@event => new Deposit()
         {
             Commitment = @event.Commitment.HasValue ? @event.Commitment.Value.ToHexForBytes32() : throw new AppException("Deposit's commitment was null", ExceptionCode.GENERAL_ERROR),
             CreateTimestamp = _timeProvider.GetUtcNowDateTime(),
@@ -49,7 +49,7 @@ public class EthereumService : IBlockChainService
             DepositTimestamp = DateTimeOffset.FromUnixTimeSeconds(@event.Timestamp).UtcDateTime,
             Index = @event.LeafIndex,
             IsDeleted = false,
-        }).ToList();
+        }).ToList(), lastBlockChecked);
     }
 
     public async Task<BigInteger> HashConcat(BigInteger left, BigInteger right)
@@ -65,25 +65,24 @@ public class EthereumService : IBlockChainService
         return outPut.Result;
     }
 
-    private async Task<IEnumerable<DepositEvent>> FetchDepositEvents(FetchDepositsParams @params, CancellationToken cancellationToken = default)
+    private async Task<(IEnumerable<DepositEvent> events, ulong lastBlockChecked)> FetchDepositEvents(FetchDepositsParams @params, CancellationToken cancellationToken = default)
     {
         Event depositEvent = _smartContract.GetEvent(DepositEventConstants.EventName);
-        NewFilterInput filterInput = await GenerateFilter(@params, depositEvent, cancellationToken);
+        (NewFilterInput filterInput, ulong lastBlockChecked)= await GenerateFilter(@params, depositEvent, cancellationToken);
 
         List<EventLog<DepositEvent>> eventLogs = await depositEvent.GetAllChangesAsync<DepositEvent>(filterInput);
-        return eventLogs.Select(eventLog => eventLog.Event);
+        return (eventLogs.Select(eventLog => eventLog.Event), lastBlockChecked);
     }
 
-    private async Task<NewFilterInput> GenerateFilter(FetchDepositsParams @params, Event @event, CancellationToken cancellationToken)
+    private async Task<(NewFilterInput filter, ulong lastCheckedBlock)> GenerateFilter(FetchDepositsParams @params, Event @event, CancellationToken cancellationToken)
     {
         ulong latestBlock = await GetLatestBlockNumber(cancellationToken);
 
         ulong toBlock = Math.Min(@params.FromBlock + (ulong)@params.BatchSize, latestBlock);
 
-        return @event.CreateFilterInput(
+        return (@event.CreateFilterInput(
             fromBlock: new BlockParameter(@params.FromBlock),
-            toBlock: new BlockParameter(toBlock)
-        );
+            toBlock: new BlockParameter(toBlock)), toBlock);
     }
 
     private async Task<ulong> GetLatestBlockNumber(CancellationToken cancellationToken = default)
