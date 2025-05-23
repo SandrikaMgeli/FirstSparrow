@@ -68,7 +68,7 @@ public class MerkleNodeRepository(
             return new MerkleNode(neighbourLayer)
             {
                 Index = neighbourIndex,
-                Commitment = GetZeroValue(neighbourLayer).ToHex(),
+                Commitment = GetZeroValue(neighbourLayer).ToHexForBytes32(),
             };
         }
 

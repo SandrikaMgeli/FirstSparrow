@@ -83,7 +83,7 @@ public class DepositService(
             // Create parent
             parentNode = new MerkleNode(parentLayer)
             {
-                Commitment = parentNewCommitment.ToHex(),
+                Commitment = parentNewCommitment.ToHexForBytes32(),
                 Index = parentIndex,
                 CreateTimestamp = timeProvider.GetUtcNowDateTime(),
                 UpdateTimestamp = null,
@@ -95,7 +95,7 @@ public class DepositService(
         }
 
         // Update parent
-        parentNode.Commitment = parentNewCommitment.ToHex();
+        parentNode.Commitment = parentNewCommitment.ToHexForBytes32();
         parentNode.UpdateTimestamp = timeProvider.GetUtcNowDateTime();
         await merkleNodeRepository.Update(parentNode, true, cancellationToken);
 
