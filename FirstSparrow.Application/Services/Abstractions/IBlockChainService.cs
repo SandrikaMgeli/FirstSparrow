@@ -7,7 +7,7 @@ namespace FirstSparrow.Application.Services.Abstractions;
 
 public interface IBlockChainService
 {
-    Task<(List<Deposit> deposits, uint lastBlockChecked)> FetchDeposits(FetchDepositsParams @params, CancellationToken cancellationToken = default);
+    Task<(List<Deposit> deposits, ulong lastBlockChecked)> FetchDeposits(FetchDepositsParams @params, CancellationToken cancellationToken = default);
 
     Task<BigInteger> HashConcat(BigInteger left, BigInteger right);
 }

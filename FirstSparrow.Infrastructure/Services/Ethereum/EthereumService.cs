@@ -38,12 +38,12 @@ public class EthereumService : IBlockChainService
         _firstSparrowConfigs = firstSparrowConfigs;
     }
 
-    public async Task<(List<Deposit> deposits, uint lastBlockChecked)> FetchDeposits(FetchDepositsParams @params, CancellationToken cancellationToken = default)
+    public async Task<(List<Deposit> deposits, ulong lastBlockChecked)> FetchDeposits(FetchDepositsParams @params, CancellationToken cancellationToken = default)
     {
-        (IEnumerable<DepositEvent> events, uint lastBlockChecked) = await FetchDepositEvents(@params, cancellationToken);
+        (IEnumerable<DepositEvent> events, ulong lastBlockChecked) = await FetchDepositEvents(@params, cancellationToken);
         return (events.Select(@event => new Deposit()
         {
-            Commitment = @event.Commitment.HasValue ? @event.Commitment.Value.ToHexForBytes32() : throw new AppException("Deposit's commitment was null", ExceptionCode.GENERAL_ERROR),
+            Commitment = @event.Commitment.ToHexForBytes32(),
             CreateTimestamp = _timeProvider.GetUtcNowDateTime(),
             UpdateTimestamp = null,
             DepositTimestamp = DateTimeOffset.FromUnixTimeSeconds(@event.Timestamp).UtcDateTime,

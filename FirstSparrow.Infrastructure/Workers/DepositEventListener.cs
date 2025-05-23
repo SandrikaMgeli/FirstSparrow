@@ -29,7 +29,7 @@ public class DepositEventListener(
             }
             finally
             {
-                await Task.Delay(1000, stoppingToken);
+                await Task.Delay(20000, stoppingToken);
             }
         }
     }

@@ -7,7 +7,7 @@ namespace FirstSparrow.Infrastructure.Services.Ethereum.Models;
 public class DepositEvent : IEventDTO
 {
     [Parameter("bytes32", "commitment", 1, true)]
-    public virtual BigInteger? Commitment { get; set; }
+    public virtual BigInteger Commitment { get; set; }
 
     [Parameter("uint32", "leafIndex", 2, false)]
     public virtual uint LeafIndex { get; set; }

@@ -108,26 +108,26 @@ public static class MerkleNodeRepositorySql
 
     public const string GetById = $@"
                                     SELECT
-                                        id,
-                                        commitment,
-                                        index,
-                                        layer,
-                                        deposit_timestamp,
-                                        create_timestamp,
-                                        update_timestamp,
-                                        is_deleted
+                                        id as {nameof(MerkleNode.Id)},
+                                        commitment as {nameof(MerkleNode.Commitment)},
+                                        index as {nameof(MerkleNode.Index)},
+                                        layer as {nameof(MerkleNode.Layer)},
+                                        deposit_timestamp as {nameof(MerkleNode.DepositTimestamp)},
+                                        create_timestamp as {nameof(MerkleNode.CreateTimestamp)},
+                                        update_timestamp as {nameof(MerkleNode.UpdateTimestamp)},
+                                        is_deleted as {nameof(MerkleNode.IsDeleted)}
                                     from merkle_nodes where id = @{nameof(MerkleNode.Id)} and is_deleted = FALSE;";
 
     public const string GetByNodeCoordinate = $@"
                                     SELECT
-                                        id,
-                                        commitment,
-                                        index,
-                                        layer,
-                                        deposit_timestamp,
-                                        create_timestamp,
-                                        update_timestamp,
-                                        is_deleted
+                                        id as {nameof(MerkleNode.Id)},
+                                        commitment as {nameof(MerkleNode.Commitment)},
+                                        index as {nameof(MerkleNode.Index)},
+                                        layer as {nameof(MerkleNode.Layer)},
+                                        deposit_timestamp as {nameof(MerkleNode.DepositTimestamp)},
+                                        create_timestamp as {nameof(MerkleNode.CreateTimestamp)},
+                                        update_timestamp as {nameof(MerkleNode.UpdateTimestamp)},
+                                        is_deleted as {nameof(MerkleNode.IsDeleted)}
                                     from merkle_nodes 
                                     where 
                                         index = @{nameof(MerkleNode.Index)} and

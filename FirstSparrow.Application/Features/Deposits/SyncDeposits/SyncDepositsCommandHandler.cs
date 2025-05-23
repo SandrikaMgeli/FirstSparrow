@@ -17,7 +17,7 @@ public class SyncDepositsCommandHandler(
     IDepositService depositService,
     IDbManager dbManager) : IRequestHandler<SyncDepositsCommand>
 {
-    private const int BatchSize = 500;
+    private const int BatchSize = 5000;
 
     public async Task Handle(SyncDepositsCommand request, CancellationToken cancellationToken)
     {
@@ -26,7 +26,7 @@ public class SyncDepositsCommandHandler(
 
         (ulong fromBlock, Metadata fromBlockEntity) = await GetLastCheckedBlock(cancellationToken);
 
-        (List<Deposit> deposits, uint lastBlockCheckedByFetchDeposit) = await FetchDeposits(fromBlock, cancellationToken);
+        (List<Deposit> deposits, ulong lastBlockCheckedByFetchDeposit) = await FetchDeposits(fromBlock, cancellationToken);
 
         foreach (Deposit deposit in deposits)
         {
@@ -36,6 +36,8 @@ public class SyncDepositsCommandHandler(
         // Update last checked block in metadata
         fromBlockEntity.Value = lastBlockCheckedByFetchDeposit.ToString();
         await metadataRepository.Update(fromBlockEntity, true, cancellationToken);
+
+        await context.CommitAsync(cancellationToken);
     }
 
     private async Task ProcessDeposit(Deposit deposit, CancellationToken cancellationToken)
@@ -50,9 +52,9 @@ public class SyncDepositsCommandHandler(
         }
     }
 
-    private async Task<(List<Deposit> deposits, uint lastBlockChecked)> FetchDeposits(ulong fromBlock, CancellationToken cancellationToken)
+    private async Task<(List<Deposit> deposits, ulong lastBlockChecked)> FetchDeposits(ulong fromBlock, CancellationToken cancellationToken)
     {
-        (List<Deposit> deposits, uint lastBlockChecked) = await blockChainService.FetchDeposits(new FetchDepositsParams()
+        (List<Deposit> deposits, ulong lastBlockChecked) = await blockChainService.FetchDeposits(new FetchDepositsParams()
         {
             FromBlock = fromBlock, 
             BatchSize = BatchSize,
