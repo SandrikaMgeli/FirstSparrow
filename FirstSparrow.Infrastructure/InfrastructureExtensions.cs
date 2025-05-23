@@ -17,7 +17,7 @@ public static class InfrastructureExtensions
         services.AddScoped<IBlockChainService, EthereumService>();
 
         // Workers
-        //services.AddHostedService<DepositEventListener>();
+        services.AddHostedService<DepositEventListener>();
 
         return services;
     }

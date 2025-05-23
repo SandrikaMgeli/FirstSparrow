@@ -1,5 +1,5 @@
-using FirstSparrow.Application.Services.Abstractions;
-using FirstSparrow.Application.Services.Models;
+using FirstSparrow.Application.Features.Deposits.SyncDeposits;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -12,19 +12,16 @@ public class DepositEventListener(
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        logger.LogInformation("Starting deposit event listener.");
-
         while (!stoppingToken.IsCancellationRequested)
         {
             try
             {
-                using IServiceScope scope = serviceScopeFactory.CreateScope();
-                IBlockChainService blockChainService = scope.ServiceProvider.GetRequiredService<IBlockChainService>();
-                await blockChainService.FetchDeposits(new FetchDepositsParams()
-                {
-                    FromBlock = 8312000,
-                    BatchSize = 500,
-                }, stoppingToken);
+                logger.LogInformation("Starting deposit event listener.");
+
+                await using AsyncServiceScope scope = serviceScopeFactory.CreateAsyncScope();
+
+                IMediator mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+                await mediator.Send(new SyncDepositsCommand(), stoppingToken);
             }
             catch (Exception ex)
             {
