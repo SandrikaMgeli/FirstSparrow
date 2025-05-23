@@ -21,7 +21,7 @@ public class SyncDepositsCommandHandler(
 
     public async Task Handle(SyncDepositsCommand request, CancellationToken cancellationToken)
     {
-        // Take lock here
+        // TODO: Take lock here
         await using IDbManagementContext context = await dbManager.RunWithTransactionAsync(IsolationLevel.ReadCommitted, cancellationToken);
 
         (ulong fromBlock, Metadata fromBlockEntity) = await GetLastCheckedBlock(cancellationToken);

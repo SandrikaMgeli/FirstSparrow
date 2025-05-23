@@ -55,6 +55,25 @@ public class MerkleNodeRepository(
         return merkleNode;
     }
 
+    public async Task<MerkleNode?> GetByCommitment(string commitment, bool ensureExists, CancellationToken cancellationToken = default)
+    {
+        EnsureConnection();
+
+        MerkleNode? merkleNode = await context.Connection!.QueryFirstOrDefaultAsync<MerkleNode>(
+            MerkleNodeRepositorySql.GetByCommitment,
+            new
+            {
+                Commitment = commitment,
+            }, context.Transaction);
+
+        if(ensureExists)
+        {
+            merkleNode.EnsureExists($"commitment = {commitment}");
+        }
+
+        return merkleNode;
+    }
+
     public async Task<MerkleNode> GetNeighbour(MerkleNode merkleNode, CancellationToken cancellationToken = default)
     {
         EnsureConnection();
@@ -75,7 +94,7 @@ public class MerkleNodeRepository(
         return neighbourNode;
     }
 
-    private BigInteger GetZeroValue(int layer)
+    public BigInteger GetZeroValue(int layer)
     {
         return _zeros[layer];
     }
@@ -116,7 +135,7 @@ public static class MerkleNodeRepositorySql
                                         create_timestamp as {nameof(MerkleNode.CreateTimestamp)},
                                         update_timestamp as {nameof(MerkleNode.UpdateTimestamp)},
                                         is_deleted as {nameof(MerkleNode.IsDeleted)}
-                                    from merkle_nodes where id = @{nameof(MerkleNode.Id)} and is_deleted = FALSE;";
+                                    from merkle_nodes where id = @{nameof(MerkleNode.Id)} and is_deleted = FALSE LIMIT 1;";
 
     public const string GetByNodeCoordinate = $@"
                                     SELECT
@@ -132,7 +151,24 @@ public static class MerkleNodeRepositorySql
                                     where 
                                         index = @{nameof(MerkleNode.Index)} and
                                         layer = @{nameof(MerkleNode.Layer)} and
-                                        is_deleted = FALSE;";
+                                        is_deleted = FALSE
+                                    LIMIT 1;";
+
+    public const string GetByCommitment = $@"
+                                    SELECT
+                                        id as {nameof(MerkleNode.Id)},
+                                        commitment as {nameof(MerkleNode.Commitment)},
+                                        index as {nameof(MerkleNode.Index)},
+                                        layer as {nameof(MerkleNode.Layer)},
+                                        deposit_timestamp as {nameof(MerkleNode.DepositTimestamp)},
+                                        create_timestamp as {nameof(MerkleNode.CreateTimestamp)},
+                                        update_timestamp as {nameof(MerkleNode.UpdateTimestamp)},
+                                        is_deleted as {nameof(MerkleNode.IsDeleted)}
+                                    from merkle_nodes 
+                                    where 
+                                        commitment = @{nameof(MerkleNode.Commitment)} and
+                                        is_deleted = FALSE
+                                    LIMIT 1";
 
     public const string Update = @$"
                                     UPDATE merkle_nodes
