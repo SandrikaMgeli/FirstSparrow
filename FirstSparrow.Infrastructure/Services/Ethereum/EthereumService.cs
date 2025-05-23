@@ -56,15 +56,13 @@ public class EthereumService : IBlockChainService
     {
         PoseidonFunction poseidonFunction = new PoseidonFunction
         {
-            Input = new byte[][] { new HexBigInteger(left), new HexBigInteger(right) }
+            Input = [ left, right ]
         };
 
         IContractQueryHandler<PoseidonFunction> handler = _web3.Eth.GetContractQueryHandler<PoseidonFunction>();
-        byte[] result = await handler.QueryAsync<byte[]>(_firstSparrowConfigs.Value.HasherSmartContractAddress, poseidonFunction);
+        PoseidonFunctionOutput outPut = await handler.QueryAsync<PoseidonFunctionOutput>(_firstSparrowConfigs.Value.HasherSmartContractAddress, poseidonFunction);
 
-        BigInteger resultAsBigInt = new BigInteger(result.Reverse().ToArray());
-
-        return resultAsBigInt;
+        return outPut.Result;
     }
 
     private async Task<IEnumerable<DepositEvent>> FetchDepositEvents(FetchDepositsParams @params, CancellationToken cancellationToken = default)
