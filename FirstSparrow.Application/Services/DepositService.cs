@@ -1,3 +1,4 @@
+using System.Data;
 using System.Numerics;
 using FirstSparrow.Application.Domain.Entities;
 using FirstSparrow.Application.Domain.Exceptions;
@@ -18,8 +19,7 @@ public class DepositService(
     public async Task ProcessDeposit(Deposit deposit, CancellationToken cancellationToken)
     {
         // TODO: Take lock here
-        //await using IDbManagementContext context = await dbManager.RunWithTransactionAsync(IsolationLevel.ReadCommitted, cancellationToken);
-        await using IDbManagementContext context = await dbManager.RunAsync(cancellationToken);
+        await using IDbManagementContext context = await dbManager.RunWithTransactionAsync(IsolationLevel.ReadCommitted, cancellationToken);
 
         deposit.EnsureNodeIsDeposit();
         await EnsureDepositNotExists(deposit, cancellationToken);
