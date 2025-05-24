@@ -399,3 +399,8 @@ FodyWeavers.xsd
 .idea/
 global.json
 .config/
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
