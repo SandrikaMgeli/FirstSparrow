@@ -229,7 +229,7 @@ class GrigaliCLI {
       const nullifierHash = this.poseidon([
         nullifier,
         BigInt(1),
-        BigInt(merkleData.Index),
+        BigInt(merkleData.index),
       ]);
       const nullifierHashHex = this.toHex32(nullifierHash);
 
@@ -240,7 +240,7 @@ class GrigaliCLI {
       }
 
       console.log("⏳ Verifying root...");
-      const isValidRoot = await this.contract.isKnownRoot(merkleData.Root);
+      const isValidRoot = await this.contract.isKnownRoot(merkleData.root);
       if (!isValidRoot) {
         throw new Error("Invalid merkle root!");
       }
@@ -254,20 +254,20 @@ class GrigaliCLI {
 
       console.log("\n⏳ Generating zero-knowledge proof...");
       const proof = await this.generateProof({
-        root: merkleData.Root,
+        root: merkleData.root,
         nullifierHash: nullifierHashHex,
         recipient: recipient,
         relayer: ethers.ZeroAddress,
         fee: "0",
         nullifier: nullifier.toString(),
-        pathElements: merkleData.Path,
-        pathIndices: merkleData.Indices,
+        pathElements: merkleData.path,
+        pathIndices: merkleData.indices,
       });
 
       console.log("⏳ Submitting withdrawal transaction...");
       const tx = await this.contract.withdraw(
         proof,
-        merkleData.Root,
+        merkleData.root,
         nullifierHashHex,
         recipient,
         ethers.ZeroAddress,
@@ -319,9 +319,9 @@ class GrigaliCLI {
       if (response.ok) {
         const data = await response.json();
         console.log("✅ Deposit found in backend");
-        console.log(`Index: ${data.Index}`);
-        console.log(`Root: ${data.Root}`);
-        console.log(`Path Elements: ${data.Path.length}`);
+        console.log(`Index: ${data.index}`);
+        console.log(`Root: ${data.root}`);
+        console.log(`Path Elements: ${data.path.length}`);
       } else {
         console.log("❌ Deposit not found in backend");
       }
