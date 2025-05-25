@@ -189,8 +189,6 @@ class GrigaliCLI {
       console.log(`🔑 IMPORTANT: Remember your nullifier: ${nullifier}`);
     } catch (error) {
       console.error("❌ Deposit failed:", error.message);
-    } finally {
-      rl.close();
     }
   }
 
@@ -282,8 +280,6 @@ class GrigaliCLI {
       console.log(`💰 Funds sent to: ${recipient}`);
     } catch (error) {
       console.error("❌ Withdrawal failed:", error.message);
-    } finally {
-      rl.close();
     }
   }
 
@@ -327,8 +323,6 @@ class GrigaliCLI {
       }
     } catch (error) {
       console.error("❌ Error checking deposit:", error.message);
-    } finally {
-      rl.close();
     }
   }
 
