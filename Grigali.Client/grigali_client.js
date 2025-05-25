@@ -47,6 +47,12 @@ class GrigaliCLI {
     this.circuitWasm = "withdraw.wasm";
     this.circuitZkey = "circuit_final.zkey";
 
+    // Initialize single readline interface
+    this.rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+
     console.log("🚀 Grigali CLI Tool Initialized");
     console.log(`📍 Contract: ${contractAddress}`);
     console.log(`🌐 RPC: ${rpcUrl}`);
@@ -76,15 +82,11 @@ class GrigaliCLI {
     }
   }
 
+  async question(prompt) {
+    return new Promise((resolve) => this.rl.question(prompt, resolve));
+  }
+
   async showMenu() {
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    });
-
-    const question = (prompt) =>
-      new Promise((resolve) => rl.question(prompt, resolve));
-
     while (true) {
       console.log("\n═══════════════════════════════════════");
       console.log("🎭 GRIGALI MIXER CLI");
@@ -98,7 +100,7 @@ class GrigaliCLI {
       console.log("7. ❌ Exit");
       console.log("═══════════════════════════════════════");
 
-      const choice = await question("Select option (1-7): ");
+      const choice = await this.question("Select option (1-7): ");
 
       try {
         switch (choice.trim()) {
@@ -122,7 +124,7 @@ class GrigaliCLI {
             break;
           case "7":
             console.log("👋 Goodbye!");
-            rl.close();
+            this.rl.close();
             return;
           default:
             console.log("❌ Invalid option. Please select 1-7.");
@@ -137,16 +139,8 @@ class GrigaliCLI {
     console.log("\n📥 MAKING DEPOSIT");
     console.log("─────────────────");
 
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    });
-
-    const question = (prompt) =>
-      new Promise((resolve) => rl.question(prompt, resolve));
-
     try {
-      const nullifierStr = await question("Enter nullifier (number): ");
+      const nullifierStr = await this.question("Enter nullifier (number): ");
       const nullifier = BigInt(nullifierStr);
 
       console.log("\n⏳ Generating commitment...");
@@ -156,10 +150,9 @@ class GrigaliCLI {
       console.log(`🔐 Commitment: ${commitmentHex}`);
       console.log(`💰 Amount: ${ethers.formatEther(this.denomination)} ETH`);
 
-      const confirm = await question("\nConfirm deposit? (y/N): ");
+      const confirm = await this.question("\nConfirm deposit? (y/N): ");
       if (confirm.toLowerCase() !== "y") {
         console.log("❌ Deposit cancelled");
-        rl.close();
         return;
       }
 
@@ -196,17 +189,11 @@ class GrigaliCLI {
     console.log("\n📤 MAKING WITHDRAWAL");
     console.log("─────────────────────");
 
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    });
-
-    const question = (prompt) =>
-      new Promise((resolve) => rl.question(prompt, resolve));
-
     try {
-      const nullifierStr = await question("Enter nullifier for withdrawal: ");
-      const recipientAddress = await question(
+      const nullifierStr = await this.question(
+        "Enter nullifier for withdrawal: ",
+      );
+      const recipientAddress = await this.question(
         "Enter recipient address (press Enter for your address): ",
       );
 
@@ -243,10 +230,9 @@ class GrigaliCLI {
         throw new Error("Invalid merkle root!");
       }
 
-      const confirm = await question("\nConfirm withdrawal? (y/N): ");
+      const confirm = await this.question("\nConfirm withdrawal? (y/N): ");
       if (confirm.toLowerCase() !== "y") {
         console.log("❌ Withdrawal cancelled");
-        rl.close();
         return;
       }
 
@@ -296,16 +282,8 @@ class GrigaliCLI {
     console.log("\n🔍 CHECK DEPOSIT STATUS");
     console.log("───────────────────────");
 
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    });
-
-    const question = (prompt) =>
-      new Promise((resolve) => rl.question(prompt, resolve));
-
     try {
-      const commitmentHex = await question("Enter commitment hash: ");
+      const commitmentHex = await this.question("Enter commitment hash: ");
 
       console.log("⏳ Checking backend...");
       const response = await fetch(
