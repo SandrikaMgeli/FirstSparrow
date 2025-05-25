@@ -13,8 +13,6 @@ public class GetDepositDetailsQueryHandler(
 {
     public async Task<GetDepositDetailsResponse> Handle(GetDepositDetailsQuery request, CancellationToken cancellationToken)
     {
-        MakeRequestValid(request);
-
         // TODO: Take a lock here.
         await using IDbManagementContext context = await dbManager.RunAsync(cancellationToken);
 
@@ -32,11 +30,6 @@ public class GetDepositDetailsQueryHandler(
             Indices = indices,
             Path = path.Select(node => node.Commitment).ToList(),
         };
-    }
-
-    private void MakeRequestValid(GetDepositDetailsQuery request)
-    {
-        request.Commitment = "0x" + request.Commitment.ToUpper().AsSpan(2).ToString();
     }
 
     private async Task<string> PopulatePathAndIndicesRecursively(MerkleNode node, List<MerkleNode> path, List<int> indices, CancellationToken cancellationToken)
