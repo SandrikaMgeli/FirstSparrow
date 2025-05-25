@@ -7,7 +7,7 @@ using Npgsql;
 namespace FirstSparrow.Persistence.Repositories.Base;
 
 public class DbManager(
-    DbManagementContext context,
+    PostgresManagementContext context,
     IOptions<ConnectionStringProvider> connectionStringProvider,
     ILogger<DbManager> logger) : IDbManager
 {

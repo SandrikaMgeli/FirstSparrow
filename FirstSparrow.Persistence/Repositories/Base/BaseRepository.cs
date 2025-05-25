@@ -6,7 +6,7 @@ using FirstSparrow.Application.Repositories.Abstractions.Base;
 namespace FirstSparrow.Persistence.Repositories.Base;
 
 public class BaseRepository<TEntity, TId>(
-    DbManagementContext context,
+    PostgresManagementContext context,
     string insertQuery,
     string deleteQuery,
     string updateQuery,

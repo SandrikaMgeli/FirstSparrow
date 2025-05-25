@@ -7,7 +7,7 @@ using FirstSparrow.Persistence.Repositories.Base;
 namespace FirstSparrow.Persistence.Repositories;
 
 public class MetadataRepository(
-    DbManagementContext context) : BaseRepository<Metadata, int>(context, MetadataRepositorySql.Insert, MetadataRepositorySql.Delete, MetadataRepositorySql.Update, MetadataRepositorySql.GetById), IMetadataRepository
+    PostgresManagementContext context) : BaseRepository<Metadata, int>(context, MetadataRepositorySql.Insert, MetadataRepositorySql.Delete, MetadataRepositorySql.Update, MetadataRepositorySql.GetById), IMetadataRepository
 {
     public async Task<Metadata?> GetByKey(string key, bool ensureExists, CancellationToken cancellationToken = default)
     {

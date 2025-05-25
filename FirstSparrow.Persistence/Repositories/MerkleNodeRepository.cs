@@ -9,7 +9,7 @@ using FirstSparrow.Persistence.Repositories.Base;
 namespace FirstSparrow.Persistence.Repositories;
 
 public class MerkleNodeRepository(
-    DbManagementContext context) : BaseRepository<MerkleNode, int>(context, MerkleNodeRepositorySql.Insert, MerkleNodeRepositorySql.Delete, MerkleNodeRepositorySql.Update, MerkleNodeRepositorySql.GetById), IMerkleNodeRepository
+    PostgresManagementContext context) : BaseRepository<MerkleNode, int>(context, MerkleNodeRepositorySql.Insert, MerkleNodeRepositorySql.Delete, MerkleNodeRepositorySql.Update, MerkleNodeRepositorySql.GetById), IMerkleNodeRepository
 {
     private readonly BigInteger[] _zeros =
     [

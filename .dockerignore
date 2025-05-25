@@ -1,0 +1,66 @@
+# .dockerignore
+
+# Exclude build artifacts
+**/bin/
+**/obj/
+**/out/
+
+# Exclude OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Exclude IDE files
+.vscode/
+.vs/
+.idea/
+*.swp
+*.swo
+*~
+
+# Exclude Git
+.git
+.gitignore
+.gitattributes
+
+# Exclude documentation
+README.md
+*.md
+
+# Exclude Node.js (if any)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Exclude test results
+TestResults/
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.trx
+*.coverage
+*.coveragexml
+
+# Exclude packages
+packages/
+*.nupkg
+
+# Exclude user secrets and local config
+**/appsettings.Local.json
+**/appsettings.Development.json
+**/.config/
+
+# Exclude Docker files from being copied
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Exclude Grigali client (not needed in backend)
+Grigali.Client/
+
+# Exclude local deposits file
+deposits.json

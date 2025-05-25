@@ -1,0 +1,85 @@
+version: "3.8"
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: firstsparrow-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: first_sparrow_db
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_HOST_AUTH_METHOD: md5
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./FirstSparrow.Persistence/Db:/docker-entrypoint-initdb.d
+    networks:
+      - firstsparrow-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d first_sparrow_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # FirstSparrow API Backend
+  firstsparrow-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: firstsparrow-api
+    restart: unless-stopped
+    ports:
+      - "5055:8080"
+    environment:
+      # Database Configuration
+      FirstSparrowDb__Host: postgres
+      FirstSparrowDb__Port: 5432
+      FirstSparrowDb__Database: first_sparrow_db
+      FirstSparrowDb__Username: root
+      FirstSparrowDb__Password: root
+      FirstSparrowDb__Pooling: true
+      FirstSparrowDb__MaxPoolSize: 100
+
+      # FirstSparrow Configuration
+      FirstSparrowConfigs__InitialBlockIndex: 8402213
+      FirstSparrowConfigs__SmartContractAddress: "0x9A4bA9A99C293359866e6A0CC779d18c355CA04a"
+      FirstSparrowConfigs__Denomination: "100000000000000000"
+      FirstSparrowConfigs__RpcUrl: "https://ethereum-sepolia-rpc.publicnode.com/"
+      FirstSparrowConfigs__HasherSmartContractAddress: "0xC0E119Df844868CA90AC978163475001B666d090"
+
+      # ASP.NET Core Configuration
+      ASPNETCORE_ENVIRONMENT: Local
+      ASPNETCORE_URLS: "http://+:8080"
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - firstsparrow-network
+    dns:
+      # Use Google DNS and Cloudflare DNS for reliable external connectivity
+      - 8.8.8.8
+      - 8.8.4.4
+      - 1.1.1.1
+      - 1.0.0.1
+    healthcheck:
+      test:
+        ["CMD", "curl", "-f", "http://localhost:8080/health", "||", "exit", "1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  firstsparrow-network:
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "false"
+
+volumes:
+  postgres_data:
+    driver: local

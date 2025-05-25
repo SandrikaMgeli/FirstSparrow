@@ -3,7 +3,7 @@ using Npgsql;
 
 namespace FirstSparrow.Persistence.Repositories.Base;
 
-public class DbManagementContext : IDbManagementContext
+public class PostgresManagementContext : IDbManagementContext
 {
     internal NpgsqlTransaction?  Transaction { get; set; }
 
