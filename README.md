@@ -1,10 +1,10 @@
-# FirstSparrow 🕊️
+# FirstSparrow
 
 **A Privacy-Preserving Ethereum Mixer Implementation**
 
 FirstSparrow is a complete implementation of an anonymous transaction system inspired by Tornado Cash, built with .NET Core backend, smart contracts, and zero-knowledge proofs. It enables users to break the on-chain link between deposited and withdrawn funds, providing financial privacy on Ethereum.
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Overview](#-overview)
 - [How Anonymous Transactions Work](#-how-anonymous-transactions-work)
@@ -17,7 +17,7 @@ FirstSparrow is a complete implementation of an anonymous transaction system ins
 - [Development](#-development)
 - [Contributing](#-contributing)
 
-## 🎯 Overview
+## Overview
 
 FirstSparrow implements a **mixer protocol** that allows users to deposit ETH into a smart contract and later withdraw it to a different address, breaking the on-chain connection between the two transactions. This is achieved through:
 
@@ -28,14 +28,14 @@ FirstSparrow implements a **mixer protocol** that allows users to deposit ETH in
 
 ### Key Features
 
-- ✅ **Complete Privacy**: Break on-chain links between deposits and withdrawals
-- ✅ **Zero-Knowledge Proofs**: Uses zk-SNARKs for cryptographic privacy guarantees
-- ✅ **Relayer Support**: Optional relayer system for enhanced anonymity
-- ✅ **Production Ready**: Full .NET backend with database persistence
-- ✅ **CLI Tools**: Easy-to-use command-line interface
-- ✅ **REST API**: Backend services for merkle path retrieval
+-  **Complete Privacy**: Break on-chain links between deposits and withdrawals
+-  **Zero-Knowledge Proofs**: Uses zk-SNARKs for cryptographic privacy guarantees
+-  **Relayer Support**: Optional relayer system for enhanced anonymity
+-  **Production Ready**: Full .NET backend with database persistence
+-  **CLI Tools**: Easy-to-use command-line interface
+-  **REST API**: Backend services for merkle path retrieval
 
-## 🔒 How Anonymous Transactions Work
+##  How Anonymous Transactions Work
 
 ### The Privacy Problem
 
@@ -85,17 +85,17 @@ nullifierHash = poseidon(nullifier, 1, leafIndex)
 
 #### 3. Zero-Knowledge Proof
 The zk-SNARK circuit proves:
-- ✅ You know a secret (nullifier) committed to in the tree
-- ✅ The commitment exists in the current merkle tree
-- ✅ You haven't spent this nullifier before
-- ✅ The withdrawal parameters (recipient, relayer, fee) are correct
+-  You know a secret (nullifier) committed to in the tree
+-  The commitment exists in the current merkle tree
+-  You haven't spent this nullifier before
+-  The withdrawal parameters (recipient, relayer, fee) are correct
 
 **Without revealing**:
-- ❌ Which specific deposit is yours
-- ❌ Your original deposit address
-- ❌ The secret nullifier value
+-  Which specific deposit is yours
+-  Your original deposit address
+-  The secret nullifier value
 
-## 🏗️ Architecture
+##  Architecture
 
 FirstSparrow uses a layered architecture following Domain-Driven Design principles:
 
@@ -141,7 +141,7 @@ FirstSparrow uses a layered architecture following Domain-Driven Design principl
 
 **Scalability**: Can easily add new interfaces or swap implementations
 
-## 🧩 System Components
+##  System Components
 
 ### 1. Smart Contracts (Solidity)
 
@@ -243,7 +243,7 @@ Interactive command-line interface for:
 node grigali_client.js <private_key> <backend_url> <contract_address> <rpc_url>
 ```
 
-## 🛡️ Security & Privacy
+##  Security & Privacy
 
 ### Relayer System Deep Dive
 
@@ -296,26 +296,26 @@ component main {public [root,nullifierHash,recipient,relayer,fee]} = Withdraw(20
 ```
 
 **This means**:
-- ✅ Proof is only valid for the exact recipient specified
-- ✅ Proof is only valid for the exact relayer specified
-- ✅ Proof is only valid for the exact fee amount specified
-- ✅ Relayer cannot change any of these without invalidating the proof
+-  Proof is only valid for the exact recipient specified
+-  Proof is only valid for the exact relayer specified
+-  Proof is only valid for the exact fee amount specified
+-  Relayer cannot change any of these without invalidating the proof
 
 **Cryptographic Guarantee**: If a relayer tries to send funds elsewhere or take a larger fee, the smart contract will reject the transaction because the proof won't verify.
 
 ### Privacy Guarantees
 
 #### What FirstSparrow Hides
-- ✅ **Link between deposits and withdrawals**: Cannot determine which deposit corresponds to which withdrawal
-- ✅ **Identity of depositor**: Original deposit address is not revealed during withdrawal
-- ✅ **Timing correlation**: Deposits and withdrawals can be separated by any amount of time
-- ✅ **Amount obfuscation**: All deposits/withdrawals are the same denomination
+-  **Link between deposits and withdrawals**: Cannot determine which deposit corresponds to which withdrawal
+-  **Identity of depositor**: Original deposit address is not revealed during withdrawal
+-  **Timing correlation**: Deposits and withdrawals can be separated by any amount of time
+-  **Amount obfuscation**: All deposits/withdrawals are the same denomination
 
 #### What FirstSparrow Cannot Hide
-- ❌ **Total contract activity**: Number of deposits and withdrawals is public
-- ❌ **Timing analysis**: If you're the only person depositing/withdrawing, timing correlation is possible
-- ❌ **IP address**: Use Tor or VPN when interacting with relayers
-- ❌ **Browser fingerprinting**: Use privacy-focused browsers
+-  **Total contract activity**: Number of deposits and withdrawals is public
+-  **Timing analysis**: If you're the only person depositing/withdrawing, timing correlation is possible
+-  **IP address**: Use Tor or VPN when interacting with relayers
+-  **Browser fingerprinting**: Use privacy-focused browsers
 
 ### Anonymity Set Size
 
@@ -329,7 +329,7 @@ component main {public [root,nullifierHash,recipient,relayer,fee]} = Withdraw(20
 - Use different amounts of time between deposit/withdrawal
 - Don't withdraw immediately after depositing
 
-## 🚀 Installation & Setup
+##  Installation & Setup
 
 ### Prerequisites
 
@@ -478,7 +478,7 @@ dotnet test
 dotnet watch run --project FirstSparrow.Api
 ```
 
-## ⚠️ Security Notice
+##  Security Notice
 
 **This software is provided for educational and research purposes.**
 
